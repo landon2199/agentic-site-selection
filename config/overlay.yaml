@@ -1,0 +1,37 @@
+# Method 1: weighted-overlay suitability for an independent coffee shop (v1 expert weights).
+# Each criterion is rescaled to 1-10 with a named function (same family as ArcGIS Rescale by Function),
+# then combined as a weighted sum. Weights must sum to 1. Thresholds are percentiles of the study-area hexes
+# so the config transfers to another county.
+criteria:
+  pop_density_km2:
+    function: log_linear        # diminishing returns: 1,000 -> 2,000 people/km2 matters more than 6,000 -> 7,000
+    direction: increasing
+    low_pct: 5
+    high_pct: 95
+    weight: 0.30
+    why: Foot traffic and walk-in customers scale with residents nearby.
+  share_25_34:
+    function: linear
+    direction: increasing
+    low_pct: 5
+    high_pct: 95
+    weight: 0.25
+    why: Adults 25-34 are the heaviest specialty-coffee buyers in U.S. surveys (NCA National Coffee Data Trends).
+  med_hh_income:
+    function: linear
+    direction: increasing
+    low_pct: 5
+    high_pct: 95
+    weight: 0.20
+    why: A $5-7 drink is a discretionary purchase; higher income means more spending room.
+  n_shops_ring1:
+    function: linear
+    direction: decreasing
+    low_pct: 5
+    high_pct: 95
+    weight: 0.25
+    why: Coffee shops (chains and independents) in the hex and its 6 neighbours (about a 3 km radius) compete for the same customers.
+# Hexes that cannot hold a viable shop get the minimum score (1) instead of a weighted sum.
+mask:
+  min_pop: 500            # allocated ACS residents in the hex
+  min_land_km2: 1.0       # land area inside the study area

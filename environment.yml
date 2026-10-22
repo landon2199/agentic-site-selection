@@ -1,0 +1,22 @@
+name: agentic-site-selection
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+  - geopandas
+  - pyarrow
+  - scipy
+  - scikit-learn
+  - pyyaml
+  - python-duckdb
+  - matplotlib
+  - pytest
+  - pip
+  - pip:
+      - "mcp>=2.0,<3"
+      - h3>=4.1
+      - anthropic>=0.40
+      - httpx
+      - -e .

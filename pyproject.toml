@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentic-site-selection"
+version = "0.1.0"
+description = "Agentic retail site selection for Houston: weighted overlay vs Esri geodemographic embeddings, a local MCP server and Claude agents, validated on held-out shops."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Landon Melesky" }]
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26", "pandas>=2", "geopandas>=1.0", "pyarrow>=14", "h3>=4.1", "pyyaml>=6",
+                "scipy>=1.11", "scikit-learn>=1.4", "mcp>=2.0,<3", "httpx>=0.27", "anthropic>=0.40"]
+
+[project.scripts]
+site-selection-mcp = "mcp_server.server:main"
+
+[tool.setuptools]
+packages = ["sitesel", "mcp_server", "agents"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

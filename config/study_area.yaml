@@ -1,0 +1,23 @@
+# Study area and data sources for v1 (Houston, independent coffee shop)
+name: Harris County, Texas
+state_fips: "48"
+county_fips: ["201"]          # Harris only; it yields well over 800 H3 r7 hexes, so Fort Bend / Montgomery are not needed
+bbox: [-95.97, 29.49, -94.90, 30.18]   # WGS84 west, south, east, north (slightly larger than the county)
+h3_resolution: 7              # about 5.2 km^2 per hex
+acs_year: 2024                # ACS 2020-2024 5-year estimates
+overture_release: 2026-10-21.0
+coffee_categories: [coffee_shop, cafe, coffee_roastery, espresso_bar, coffee_and_tea]
+min_place_confidence: 0.5     # Overture confidence below this is dropped
+# Brand names (case-insensitive substrings) treated as chains even if Overture has no brand tag
+chains: [starbucks, dunkin, "dutch bros", "7 brew", "7brew", "black rifle", "black rock coffee", "pj's coffee",
+         "pjs coffee", "peet's", "peets", caribou, "tim hortons", "scooter's", biggby, "coffee bean & tea leaf",
+         panera, mcdonald, "krispy kreme", shipley, einstein, "la madeleine", "summer moon", "the human bean",
+         "barnes & noble", "paris baguette", "85c bakery", "85°c", "tous les jours", "cafe nero", "luckin",
+         "costa coffee", "dunn bros", "wfm coffee bar", "whole foods", "capital one", "nestle toll house",
+         "cinnabon", "cafe express", "minuti", "slowpokes", "allegro coffee", "htea", "bluestone lane",
+         "just love coffee", "kolache factory", "ihop", "denny", "first watch", "kroger", "target", "heb"]
+# Also a chain: any name that appears at min_sites_for_chain or more locations in the study area.
+min_sites_for_chain: 4
+# Names containing these are not coffee shops for this question (tea/boba/donut/bakery-first places)
+exclude_name_terms: [boba, "bubble tea", "milk tea", smoothie, juice, donut, kolache, "tea house", "teahouse",
+                     "nutrition", "vape", "hookah", "internet", "church"]

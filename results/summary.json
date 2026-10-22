@@ -1,0 +1,27 @@
+{
+  "n_hexes": 880,
+  "n_query_hexes": 253,
+  "overlay_weights": {
+    "pop_density_km2": 0.3,
+    "share_25_34": 0.25,
+    "med_hh_income": 0.2,
+    "n_shops_ring1": 0.25
+  },
+  "esri_vs_numpy": {
+    "spearman": 1.0,
+    "max_abs_diff": 1.648376352081371e-07,
+    "top10_jaccard": 1.0
+  },
+  "embedding_source": "emb_esri",
+  "method_agreement": {
+    "top10_jaccard": 0.023,
+    "top10_both": 4,
+    "top10_size": 88,
+    "spearman_all": 0.532,
+    "spearman_unmasked": 0.035
+  },
+  "gi_numpy_vs_arcpy": {
+    "spearman": 1.0,
+    "max_abs_z_diff": 0.0
+  }
+}
