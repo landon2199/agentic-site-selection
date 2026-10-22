@@ -1,0 +1,60 @@
+{
+  "budget_usd": 8.0,
+  "runs": [
+    {
+      "label": "run_01",
+      "date": "2026-10-22T20:31:01+00:00",
+      "cost_usd": 0.11012,
+      "tokens": {
+        "input": 22,
+        "output": 6653,
+        "cache_read": 3749,
+        "cache_write": 24739
+      }
+    },
+    {
+      "label": "run_02",
+      "date": "2026-10-22T20:31:48+00:00",
+      "cost_usd": 0.06631,
+      "tokens": {
+        "input": 30,
+        "output": 4929,
+        "cache_read": 6900,
+        "cache_write": 16090
+      }
+    },
+    {
+      "label": "run_03",
+      "date": "2026-10-22T20:32:32+00:00",
+      "cost_usd": 0.11066,
+      "tokens": {
+        "input": 22,
+        "output": 5948,
+        "cache_read": 3782,
+        "cache_write": 27982
+      }
+    },
+    {
+      "label": "run_04",
+      "date": "2026-10-22T20:33:25+00:00",
+      "cost_usd": 0.16121,
+      "tokens": {
+        "input": 22,
+        "output": 7119,
+        "cache_read": 3776,
+        "cache_write": 43914
+      }
+    },
+    {
+      "label": "run_05",
+      "date": "2026-10-22T20:34:10+00:00",
+      "cost_usd": 0.13708,
+      "tokens": {
+        "input": 30,
+        "output": 5098,
+        "cache_read": 11458,
+        "cache_write": 39895
+      }
+    }
+  ]
+}

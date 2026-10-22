@@ -1,0 +1,1227 @@
+{
+  "label": "run_01",
+  "question": "Where in Houston should an independent coffee shop open next? Give me the top 5 areas and why.",
+  "status": "ok",
+  "run_at": "2026-10-22T20:31:01+00:00",
+  "models": {
+    "manager": "claude-sonnet-5-5",
+    "summary": "claude-sonnet-5-5",
+    "geocode": "claude-haiku-5-5",
+    "data": "claude-haiku-5-5",
+    "analysis": "claude-sonnet-5-5",
+    "validation": "claude-haiku-5-5"
+  },
+  "seconds": 44.0,
+  "cost_usd": 0.1101,
+  "tokens": {
+    "input": 22,
+    "output": 6653,
+    "cache_read": 3749,
+    "cache_write": 24739
+  },
+  "n_api_calls": 7,
+  "n_mcp_tool_calls": 4,
+  "final_answer": "**1. Direct answer**\nThe data supports a rough shortlist of areas to investigate, not confirmed sites. The overlay method's strongest signal is a northeast cluster near (-95.2, 29.95). The two methods disagree completely, and validation shows only moderate predictive power.\n\n**2. Ranked sites** (each hex is about 5 km\u00b2)\n1. **87446c38effffff** (-95.21, 29.95), score 9.03. It has the top score for young adults aged 25\u201334 (10) and for density (9.6), and income is about $130k. It has no shops of its own and 7 in the hex plus its neighbours. It is also the hottest Gi* hot spot (z 2.95, p 0.003).\n2. **87446cb9affffff** (-95.37, 29.59), score 8.43. Competition is low: 1 chain and 4 shops in the surrounding ring.\n3. **87446c381ffffff** (-95.21, 29.93), score 8.40. Age 25\u201334 sub-score is 10. It has 3 chains, no independents, and 8 shops in the ring.\n4. **87446c265ffffff** (-95.54, 30.06), score 8.36. Age 25\u201334 sub-score is 10 and income is about $130k. It has no shops of its own and 12 in the ring.\n5. **87446c39dffffff** (-95.19, 29.96), score 8.36. Density sub-score is 10 and income is about $157k. The 25\u201334 share is only 0.139, and the hex has no shops of its own.\n\nRanks 1, 3 and 5 sit in the same northeast cluster.\n\n**3. Method agreement**\nThe methods do not agree. The two top-10 lists share no hexes. Top-10% Jaccard overlap is 0.023 (4 of 88 hexes), and Spearman correlation is 0.53 overall but 0.035 on unmasked hexes. The overlay favours affluent, young, low-competition hexes. The embeddings favour dense, mid-income ($52k\u2013$99k), competitive hexes with 5\u201332 shops in the ring. The closest crossover is 87446c275ffffff (-95.47, 30.06), which is 3rd on similarity (0.9255) with an overlay score of 7.52. The top 5 above uses the overlay ranking only.\n\n**Confidence: low**\nThe methods contradict each other, and validation shows only moderate skill.\n\n- **Validation vs random:** Across 5 spatial blocks (880 hexes, 253 with an independent shop), overlay AUC was 0.708 (range 0.55\u20130.81) and embedding AUC was 0.743 (range 0.53\u20130.89), against 0.50 for random. P@10 was 0.40 for overlay (range 0.1\u20131.0) and 0.58 for embeddings, against 0.286 for random. Neither method worked in every block.\n- **What validation measures:** It tests resemblance to existing independent-shop locations, not whether those shops succeed.\n- **Embeddings:** They scored somewhat better than the overlay, yet they did not pick the overlay's sites. The ESRI and numpy results are identical, so they are not independent confirmation. The Esri embeddings are also a beta dataset.\n- **Missing data:** There are no sales, rent, foot-traffic or parcel data. Hexes of about 5 km\u00b2 are coarse for a coffee shop's catchment.\n- **Overture completeness:** Zero-shop hexes may have shops that are missing from the data.\n- **Hot-spot test:** The Gi* test has no multiple-testing correction.\n- **Field checks:**\n  - Whether low-competition, high-income hexes (especially ranks 4 and 5) simply lack demand.\n  - Actual shop counts.\n  - Rents.\n  - Foot traffic.\n  - Specific street-level locations.",
+  "events": [
+    {
+      "type": "api_call",
+      "agent": "manager",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 2.8,
+      "usage": {
+        "input": 4,
+        "output": 305,
+        "cache_read": 0,
+        "cache_write": 1149,
+        "cost_usd": 0.00593
+      }
+    },
+    {
+      "type": "delegation",
+      "agent": "analysis",
+      "model": "claude-sonnet-5-5",
+      "task": "For Harris County (Houston) TX, produce the top 5 hexes for a new independent coffee shop using (1) overlay suitability ranking and (2) embedding similarity to existing coffee shop hexes (find_similar). Report top 10 of each with scores, hex ids, and key drivers, and the overlap/agreement between the two methods. Also run hot_spots/hex_profile as needed to describe the final top 5 hexes (demographics, competition, amenities)."
+    },
+    {
+      "type": "api_call",
+      "agent": "analysis",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 1.6,
+      "usage": {
+        "input": 4,
+        "output": 171,
+        "cache_read": 0,
+        "cache_write": 1974,
+        "cost_usd": 0.00665
+      }
+    },
+    {
+      "type": "delegation",
+      "agent": "validation",
+      "model": "claude-haiku-5-5",
+      "task": "Run validation: report how well each method (overlay suitability and embedding similarity) recovered held-out coffee shops, with all metrics and numbers, and any caveats."
+    },
+    {
+      "type": "api_call",
+      "agent": "validation",
+      "model": "claude-haiku-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 0.8,
+      "usage": {
+        "input": 4,
+        "output": 46,
+        "cache_read": 0,
+        "cache_write": 626,
+        "cost_usd": 0.0001
+      }
+    },
+    {
+      "type": "mcp_tool_call",
+      "agent": "validation",
+      "tool": "validate",
+      "input": {
+        "method": "all"
+      },
+      "is_error": false,
+      "seconds": 0.57,
+      "result": {
+        "design": {
+          "blocks": "k-means k=5 on hex centroids (EPSG:5070), seed 0",
+          "positives": "hexes with >=1 independent coffee shop",
+          "n_hexes": 880,
+          "n_positive_hexes": 253,
+          "random_orderings_per_block": 2000,
+          "esri_tool_included": true
+        },
+        "per_method_mean_min_max": {
+          "overlay": {
+            "auc": {
+              "mean": 0.708,
+              "min": 0.55,
+              "max": 0.81
+            },
+            "p_at_k": {
+              "mean": 0.427,
+              "min": 0.273,
+              "max": 0.703
+            },
+            "p_at_10": {
+              "mean": 0.4,
+              "min": 0.1,
+              "max": 1.0
+            }
+          },
+          "overlay_demand_only": {
+            "auc": {
+              "mean": 0.707,
+              "min": 0.549,
+              "max": 0.812
+            },
+            "p_at_k": {
+              "mean": 0.429,
+              "min": 0.273,
+              "max": 0.683
+            },
+            "p_at_10": {
+              "mean": 0.4,
+              "min": 0.1,
+              "max": 1.0
+            }
+          },
+          "embeddings_numpy": {
+            "auc": {
+              "mean": 0.743,
+              "min": 0.528,
+              "max": 0.886
+            },
+            "p_at_k": {
+              "mean": 0.484,
+              "min": 0.318,
+              "max": 0.629
+            },
+            "p_at_10": {
+              "mean": 0.58,
+              "min": 0.4,
+              "max": 0.8
+            }
+          },
+          "embeddings_esri": {
+            "auc": {
+              "mean": 0.743,
+              "min": 0.528,
+              "max": 0.886
+            },
+            "p_at_k": {
+              "mean": 0.484,
+              "min": 0.318,
+              "max": 0.629
+            },
+            "p_at_10": {
+              "mean": 0.58,
+              "min": 0.4,
+              "max": 0.8
+            }
+          },
+          "random": {
+            "auc": {
+              "mean": 0.5,
+              "min": 0.499,
+              "max": 0.502
+            },
+            "p_at_k": {
+              "mean": 0.285,
+              "min": 0.127,
+              "max": 0.534
+            },
+            "p_at_10": {
+              "mean": 0.286,
+              "min": 0.127,
+              "max": 0.537
+            }
+          }
+        },
+        "per_block": [
+          {
+            "block": 0,
+            "method": "overlay",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.744,
+            "p_at_k": 0.703,
+            "p_at_10": 1.0
+          },
+          {
+            "block": 0,
+            "method": "overlay_demand_only",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.737,
+            "p_at_k": 0.683,
+            "p_at_10": 1.0
+          },
+          {
+            "block": 0,
+            "method": "embeddings_numpy",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.528,
+            "p_at_k": 0.525,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 0,
+            "method": "embeddings_esri",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.528,
+            "p_at_k": 0.525,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 0,
+            "method": "random",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.5,
+            "p_at_k": 0.534,
+            "p_at_10": 0.537
+          },
+          {
+            "block": 1,
+            "method": "overlay",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.55,
+            "p_at_k": 0.373,
+            "p_at_10": 0.1
+          },
+          {
+            "block": 1,
+            "method": "overlay_demand_only",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.549,
+            "p_at_k": 0.373,
+            "p_at_10": 0.1
+          },
+          {
+            "block": 1,
+            "method": "embeddings_numpy",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.697,
+            "p_at_k": 0.471,
+            "p_at_10": 0.7
+          },
+          {
+            "block": 1,
+            "method": "embeddings_esri",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.697,
+            "p_at_k": 0.471,
+            "p_at_10": 0.7
+          },
+          {
+            "block": 1,
+            "method": "random",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.499,
+            "p_at_k": 0.326,
+            "p_at_10": 0.326
+          },
+          {
+            "block": 2,
+            "method": "overlay",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.762,
+            "p_at_k": 0.273,
+            "p_at_10": 0.2
+          },
+          {
+            "block": 2,
+            "method": "overlay_demand_only",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.761,
+            "p_at_k": 0.273,
+            "p_at_10": 0.2
+          },
+          {
+            "block": 2,
+            "method": "embeddings_numpy",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.818,
+            "p_at_k": 0.318,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 2,
+            "method": "embeddings_esri",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.818,
+            "p_at_k": 0.318,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 2,
+            "method": "random",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.499,
+            "p_at_k": 0.127,
+            "p_at_10": 0.127
+          },
+          {
+            "block": 3,
+            "method": "overlay",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.81,
+            "p_at_k": 0.4,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 3,
+            "method": "overlay_demand_only",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.812,
+            "p_at_k": 0.429,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 3,
+            "method": "embeddings_numpy",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.886,
+            "p_at_k": 0.629,
+            "p_at_10": 0.8
+          },
+          {
+            "block": 3,
+            "method": "embeddings_esri",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.886,
+            "p_at_k": 0.629,
+            "p_at_10": 0.8
+          },
+          {
+            "block": 3,
+            "method": "random",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.5,
+            "p_at_k": 0.201,
+            "p_at_10": 0.204
+          },
+          {
+            "block": 4,
+            "method": "overlay",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.676,
+            "p_at_k": 0.386,
+            "p_at_10": 0.3
+          },
+          {
+            "block": 4,
+            "method": "overlay_demand_only",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.675,
+            "p_at_k": 0.386,
+            "p_at_10": 0.3
+          },
+          {
+            "block": 4,
+            "method": "embeddings_numpy",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.784,
+            "p_at_k": 0.477,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 4,
+            "method": "embeddings_esri",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.784,
+            "p_at_k": 0.477,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 4,
+            "method": "random",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.502,
+            "p_at_k": 0.238,
+            "p_at_10": 0.235
+          }
+        ],
+        "method_agreement": {
+          "top10_jaccard": 0.023,
+          "top10_both": 4,
+          "top10_size": 88,
+          "spearman_all": 0.532,
+          "spearman_unmasked": 0.035
+        },
+        "sources": {
+          "script": "pipeline/validate.py",
+          "files": [
+            "results/validation.json",
+            "results/validation_blocks.csv"
+          ]
+        },
+        "checks": [
+          {
+            "check": "overlay_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.708 (range 0.55-0.81), P@k 0.427 vs random 0.285"
+          },
+          {
+            "check": "overlay_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.55"
+          },
+          {
+            "check": "overlay_demand_only_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.707 (range 0.549-0.812), P@k 0.429 vs random 0.285"
+          },
+          {
+            "check": "overlay_demand_only_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.549"
+          },
+          {
+            "check": "embeddings_numpy_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.743 (range 0.528-0.886), P@k 0.484 vs random 0.285"
+          },
+          {
+            "check": "embeddings_numpy_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.528"
+          },
+          {
+            "check": "embeddings_esri_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.743 (range 0.528-0.886), P@k 0.484 vs random 0.285"
+          },
+          {
+            "check": "embeddings_esri_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.528"
+          }
+        ],
+        "caveats": [
+          "Positives are hexes that already have an independent shop: this measures 'finds places like where shops are', not profitability or survival.",
+          "Only 5 blocks; the min-max range is wide and one block (the dense urban core) behaves differently.",
+          "Within a held-out block the competition criterion is nearly constant (its shops are hidden), so overlay and overlay_demand_only score almost the same there."
+        ]
+      }
+    },
+    {
+      "type": "api_call",
+      "agent": "validation",
+      "model": "claude-haiku-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 3.4,
+      "usage": {
+        "input": 2,
+        "output": 812,
+        "cache_read": 626,
+        "cache_write": 3907,
+        "cost_usd": 0.0009
+      }
+    },
+    {
+      "type": "report",
+      "agent": "validation",
+      "text": "**Validation results (5 spatial blocks, 880 hexes, 253 positive hexes)**\n\n| Method | AUC mean (min\u2013max) | P@k mean (min\u2013max) | P@10 mean (min\u2013max) |\n|---|---|---|---|\n| Overlay | 0.708 (0.550\u20130.810) | 0.427 (0.273\u20130.703) | 0.400 (0.100\u20131.000) |\n| Overlay, demand only | 0.707 (0.549\u20130.812) | 0.429 (0.273\u20130.683) | 0.400 (0.100\u20131.000) |\n| Embeddings (numpy) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Embeddings (ESRI) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Random | 0.500 (0.499\u20130.502) | 0.285 (0.127\u20130.534) | 0.286 (0.127\u20130.537) |\n\n- **Weakest blocks:** Overlay, block 1 (AUC 0.550). Embeddings, block 0 (AUC 0.528).\n- **Method agreement:** top-10% Jaccard 0.023 (4 shared of 88). Spearman 0.532 across all hexes, 0.035 on unmasked hexes.\n- **Checks:** All methods beat random on mean AUC and P@k. The \"every block useful\" check is a warning for all four methods.\n\n**Caveats**\n- Positives are hexes that already have an independent shop. This measures similarity to existing shop locations, not profitability or survival.\n- Only 5 blocks, so the min\u2013max ranges are wide. The dense urban core block behaves differently.\n- Within a held-out block, the competition criterion is nearly constant because its shops are hidden. Overlay and overlay-demand-only therefore score almost identically.\n- The ESRI and numpy embedding results are identical, so they appear to be the same computation."
+    },
+    {
+      "type": "mcp_tool_call",
+      "agent": "analysis",
+      "tool": "overlay_suitability",
+      "input": {
+        "top_n": 10
+      },
+      "is_error": false,
+      "seconds": 4.77,
+      "result": {
+        "weights_used": {
+          "pop_density_km2": 0.3,
+          "share_25_34": 0.25,
+          "med_hh_income": 0.2,
+          "n_shops_ring1": 0.25
+        },
+        "criteria": {
+          "pop_density_km2": {
+            "function": "log_linear",
+            "direction": "increasing",
+            "range_percentiles": [
+              5,
+              95
+            ],
+            "why": "Foot traffic and walk-in customers scale with residents nearby."
+          },
+          "share_25_34": {
+            "function": "linear",
+            "direction": "increasing",
+            "range_percentiles": [
+              5,
+              95
+            ],
+            "why": "Adults 25-34 are the heaviest specialty-coffee buyers in U.S. surveys (NCA National Coffee Data Trends)."
+          },
+          "med_hh_income": {
+            "function": "linear",
+            "direction": "increasing",
+            "range_percentiles": [
+              5,
+              95
+            ],
+            "why": "A $5-7 drink is a discretionary purchase; higher income means more spending room."
+          },
+          "n_shops_ring1": {
+            "function": "linear",
+            "direction": "decreasing",
+            "range_percentiles": [
+              5,
+              95
+            ],
+            "why": "Coffee shops (chains and independents) in the hex and its 6 neighbours (about a 3 km radius) compete for the same customers."
+          }
+        },
+        "masked_hexes": 230,
+        "n_hexes": 880,
+        "top": [
+          {
+            "h3": "87446c38effffff",
+            "lon": -95.2104,
+            "lat": 29.9502,
+            "population": 12415,
+            "share_25_34": 0.234,
+            "median_hh_income_usd": 130054,
+            "pop_density_per_km2": 2152,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 7,
+            "km_to_nearest_shop_from_centre": 2.16,
+            "rank": 1,
+            "score_1_10": 9.03,
+            "subscores_1_10": {
+              "pop_density_km2": 9.6,
+              "share_25_34": 10.0,
+              "med_hh_income": 8.02,
+              "n_shops_ring1": 8.2
+            },
+            "embedding_percentile": 45.8
+          },
+          {
+            "h3": "87446cb9affffff",
+            "lon": -95.3659,
+            "lat": 29.5941,
+            "population": 5238,
+            "share_25_34": 0.211,
+            "median_hh_income_usd": 108097,
+            "pop_density_per_km2": 1033,
+            "coffee_shops": 1,
+            "independents": 0,
+            "chains": 1,
+            "shops_in_hex_and_neighbours": 4,
+            "km_to_nearest_shop_from_centre": 1.15,
+            "rank": 2,
+            "score_1_10": 8.43,
+            "subscores_1_10": {
+              "pop_density_km2": 8.71,
+              "share_25_34": 9.32,
+              "med_hh_income": 6.22,
+              "n_shops_ring1": 8.97
+            },
+            "embedding_percentile": 52.7
+          },
+          {
+            "h3": "87446c381ffffff",
+            "lon": -95.2144,
+            "lat": 29.9271,
+            "population": 3293,
+            "share_25_34": 0.227,
+            "median_hh_income_usd": 121924,
+            "pop_density_per_km2": 644,
+            "coffee_shops": 3,
+            "independents": 0,
+            "chains": 3,
+            "shops_in_hex_and_neighbours": 8,
+            "km_to_nearest_shop_from_centre": 1.08,
+            "rank": 3,
+            "score_1_10": 8.4,
+            "subscores_1_10": {
+              "pop_density_km2": 8.14,
+              "share_25_34": 10.0,
+              "med_hh_income": 7.35,
+              "n_shops_ring1": 7.94
+            },
+            "embedding_percentile": 43.4
+          },
+          {
+            "h3": "87446c265ffffff",
+            "lon": -95.542,
+            "lat": 30.0594,
+            "population": 4763,
+            "share_25_34": 0.229,
+            "median_hh_income_usd": 129614,
+            "pop_density_per_km2": 823,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 12,
+            "km_to_nearest_shop_from_centre": 2.38,
+            "rank": 4,
+            "score_1_10": 8.36,
+            "subscores_1_10": {
+              "pop_density_km2": 8.44,
+              "share_25_34": 10.0,
+              "med_hh_income": 7.98,
+              "n_shops_ring1": 6.91
+            },
+            "embedding_percentile": 46.2
+          },
+          {
+            "h3": "87446c39dffffff",
+            "lon": -95.1856,
+            "lat": 29.9583,
+            "population": 5799,
+            "share_25_34": 0.139,
+            "median_hh_income_usd": 157311,
+            "pop_density_per_km2": 3286,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 6,
+            "km_to_nearest_shop_from_centre": 2.35,
+            "rank": 5,
+            "score_1_10": 8.36,
+            "subscores_1_10": {
+              "pop_density_km2": 10.0,
+              "share_25_34": 4.97,
+              "med_hh_income": 10.0,
+              "n_shops_ring1": 8.46
+            },
+            "embedding_percentile": 65.9
+          },
+          {
+            "h3": "87446c398ffffff",
+            "lon": -95.1609,
+            "lat": 29.9664,
+            "population": 7080,
+            "share_25_34": 0.157,
+            "median_hh_income_usd": 149666,
+            "pop_density_per_km2": 1334,
+            "coffee_shops": 1,
+            "independents": 0,
+            "chains": 1,
+            "shops_in_hex_and_neighbours": 6,
+            "km_to_nearest_shop_from_centre": 1.42,
+            "rank": 6,
+            "score_1_10": 8.26,
+            "subscores_1_10": {
+              "pop_density_km2": 9.02,
+              "share_25_34": 6.06,
+              "med_hh_income": 9.63,
+              "n_shops_ring1": 8.46
+            },
+            "embedding_percentile": 50.2
+          },
+          {
+            "h3": "87446c392ffffff",
+            "lon": -95.0988,
+            "lat": 29.9214,
+            "population": 3042,
+            "share_25_34": 0.173,
+            "median_hh_income_usd": 121167,
+            "pop_density_per_km2": 1068,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 2,
+            "km_to_nearest_shop_from_centre": 2.8,
+            "rank": 7,
+            "score_1_10": 8.22,
+            "subscores_1_10": {
+              "pop_density_km2": 8.75,
+              "share_25_34": 7.04,
+              "med_hh_income": 7.29,
+              "n_shops_ring1": 9.49
+            },
+            "embedding_percentile": 45.1
+          },
+          {
+            "h3": "87446c140ffffff",
+            "lon": -95.2504,
+            "lat": 29.5886,
+            "population": 7595,
+            "share_25_34": 0.204,
+            "median_hh_income_usd": 100796,
+            "pop_density_per_km2": 1400,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 6,
+            "km_to_nearest_shop_from_centre": 1.42,
+            "rank": 8,
+            "score_1_10": 8.2,
+            "subscores_1_10": {
+              "pop_density_km2": 9.08,
+              "share_25_34": 8.94,
+              "med_hh_income": 5.62,
+              "n_shops_ring1": 8.46
+            },
+            "embedding_percentile": 74.8
+          },
+          {
+            "h3": "87446dc02ffffff",
+            "lon": -95.8071,
+            "lat": 30.0157,
+            "population": 4553,
+            "share_25_34": 0.176,
+            "median_hh_income_usd": 113951,
+            "pop_density_per_km2": 870,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 0,
+            "km_to_nearest_shop_from_centre": 5.25,
+            "rank": 9,
+            "score_1_10": 8.19,
+            "subscores_1_10": {
+              "pop_density_km2": 8.51,
+              "share_25_34": 7.21,
+              "med_hh_income": 6.7,
+              "n_shops_ring1": 10.0
+            },
+            "embedding_percentile": 56.8
+          },
+          {
+            "h3": "87446c141ffffff",
+            "lon": -95.2711,
+            "lat": 29.6036,
+            "population": 6715,
+            "share_25_34": 0.192,
+            "median_hh_income_usd": 94583,
+            "pop_density_per_km2": 1412,
+            "coffee_shops": 1,
+            "independents": 0,
+            "chains": 1,
+            "shops_in_hex_and_neighbours": 2,
+            "km_to_nearest_shop_from_centre": 0.71,
+            "rank": 10,
+            "score_1_10": 8.17,
+            "subscores_1_10": {
+              "pop_density_km2": 9.09,
+              "share_25_34": 8.18,
+              "med_hh_income": 5.12,
+              "n_shops_ring1": 9.49
+            },
+            "embedding_percentile": 82.8
+          }
+        ],
+        "sources": {
+          "method": "Weighted overlay (rescale to 1-10, weighted sum), config/overlay.yaml",
+          "acs": "ACS 2020-2024 5-year (B01001, B01003, B19013), tract -> hex by 2020 block-population weights",
+          "shops": "Overture Maps Places release 2026-10-21.0 (coffee_shop / cafe / roastery), cleaned and de-duplicated"
+        },
+        "checks": [
+          {
+            "check": "weights_sum_to_1",
+            "status": "pass",
+            "detail": "{\"pop_density_km2\": 0.3, \"share_25_34\": 0.25, \"med_hh_income\": 0.2, \"n_shops_ring1\": 0.25}"
+          },
+          {
+            "check": "scores_in_range",
+            "status": "pass",
+            "detail": "all scores within 1-10"
+          },
+          {
+            "check": "rank_stability_vs_default",
+            "status": "pass",
+            "detail": "Spearman vs default weights = 1.000"
+          }
+        ],
+        "caveats": [
+          "No sales or revenue data: 'like existing shops' is not the same as 'profitable'.",
+          "H3 r7 hexes are about 5.2 km^2, coarse for a coffee shop whose catchment is often a few blocks.",
+          "Shop locations come from Overture Places; openings, closures and independents with no web presence can be missing.",
+          "Weights are expert judgement, not fitted to outcomes.",
+          "The competition criterion rewards gaps; a hex with zero shops may also have zero demand."
+        ]
+      }
+    },
+    {
+      "type": "mcp_tool_call",
+      "agent": "analysis",
+      "tool": "find_similar",
+      "input": {
+        "top_n": 10
+      },
+      "is_error": false,
+      "seconds": 0.04,
+      "result": {
+        "engine": "precomputed_esri",
+        "engine_detail": "arcpy.geoai.FindSimilarFeaturesUsingEmbeddings (ArcGIS Pro 3.7), precomputed run",
+        "n_query_hexes": 253,
+        "query": "hexes with >=1 independent coffee shop",
+        "excluded": "query hexes and hexes that already have an independent shop",
+        "top": [
+          {
+            "h3": "87446ddb0ffffff",
+            "lon": -95.6483,
+            "lat": 29.8498,
+            "population": 20657,
+            "share_25_34": 0.153,
+            "median_hh_income_usd": 66201,
+            "pop_density_per_km2": 3564,
+            "coffee_shops": 3,
+            "independents": 0,
+            "chains": 3,
+            "shops_in_hex_and_neighbours": 12,
+            "km_to_nearest_shop_from_centre": 0.55,
+            "rank": 1,
+            "similarity": 0.9334,
+            "similarity_percentile": 99.9,
+            "overlay_score_1_10": 6.75
+          },
+          {
+            "h3": "87446c15affffff",
+            "lon": -95.193,
+            "lat": 29.6511,
+            "population": 12071,
+            "share_25_34": 0.141,
+            "median_hh_income_usd": 52228,
+            "pop_density_per_km2": 2100,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 9,
+            "km_to_nearest_shop_from_centre": 1.57,
+            "rank": 2,
+            "similarity": 0.9283,
+            "similarity_percentile": 99.2,
+            "overlay_score_1_10": 6.38
+          },
+          {
+            "h3": "87446c275ffffff",
+            "lon": -95.4715,
+            "lat": 30.0608,
+            "population": 8653,
+            "share_25_34": 0.177,
+            "median_hh_income_usd": 99217,
+            "pop_density_per_km2": 1497,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 10,
+            "km_to_nearest_shop_from_centre": 2.44,
+            "rank": 3,
+            "similarity": 0.9255,
+            "similarity_percentile": 99.0,
+            "overlay_score_1_10": 7.52
+          },
+          {
+            "h3": "87446c35affffff",
+            "lon": -95.4548,
+            "lat": 30.0227,
+            "population": 11648,
+            "share_25_34": 0.127,
+            "median_hh_income_usd": 73970,
+            "pop_density_per_km2": 2190,
+            "coffee_shops": 1,
+            "independents": 0,
+            "chains": 1,
+            "shops_in_hex_and_neighbours": 8,
+            "km_to_nearest_shop_from_centre": 1.19,
+            "rank": 4,
+            "similarity": 0.9229,
+            "similarity_percentile": 98.8,
+            "overlay_score_1_10": 6.61
+          },
+          {
+            "h3": "87446c361ffffff",
+            "lon": -95.566,
+            "lat": 29.9207,
+            "population": 13657,
+            "share_25_34": 0.127,
+            "median_hh_income_usd": 84209,
+            "pop_density_per_km2": 2445,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 7,
+            "km_to_nearest_shop_from_centre": 2.07,
+            "rank": 5,
+            "similarity": 0.9213,
+            "similarity_percentile": 98.6,
+            "overlay_score_1_10": 6.89
+          },
+          {
+            "h3": "87446ca01ffffff",
+            "lon": -95.5891,
+            "lat": 29.6511,
+            "population": 5226,
+            "share_25_34": 0.147,
+            "median_hh_income_usd": 62547,
+            "pop_density_per_km2": 3721,
+            "coffee_shops": 3,
+            "independents": 0,
+            "chains": 3,
+            "shops_in_hex_and_neighbours": 10,
+            "km_to_nearest_shop_from_centre": 0.76,
+            "rank": 6,
+            "similarity": 0.9208,
+            "similarity_percentile": 98.4,
+            "overlay_score_1_10": 6.71
+          },
+          {
+            "h3": "87446c10bffffff",
+            "lon": -95.1392,
+            "lat": 29.5599,
+            "population": 17738,
+            "share_25_34": 0.187,
+            "median_hh_income_usd": 68566,
+            "pop_density_per_km2": 3072,
+            "coffee_shops": 2,
+            "independents": 0,
+            "chains": 2,
+            "shops_in_hex_and_neighbours": 27,
+            "km_to_nearest_shop_from_centre": 1.1,
+            "rank": 7,
+            "similarity": 0.9178,
+            "similarity_percentile": 98.3,
+            "overlay_score_1_10": 6.33
+          },
+          {
+            "h3": "87446c3abffffff",
+            "lon": -95.2599,
+            "lat": 29.934,
+            "population": 10338,
+            "share_25_34": 0.157,
+            "median_hh_income_usd": 74422,
+            "pop_density_per_km2": 2046,
+            "coffee_shops": 3,
+            "independents": 0,
+            "chains": 3,
+            "shops_in_hex_and_neighbours": 5,
+            "km_to_nearest_shop_from_centre": 0.69,
+            "rank": 8,
+            "similarity": 0.9174,
+            "similarity_percentile": 98.2,
+            "overlay_score_1_10": 7.25
+          },
+          {
+            "h3": "87446ca56ffffff",
+            "lon": -95.6226,
+            "lat": 29.7273,
+            "population": 15288,
+            "share_25_34": 0.153,
+            "median_hh_income_usd": 68637,
+            "pop_density_per_km2": 2996,
+            "coffee_shops": 1,
+            "independents": 0,
+            "chains": 1,
+            "shops_in_hex_and_neighbours": 32,
+            "km_to_nearest_shop_from_centre": 0.75,
+            "rank": 9,
+            "similarity": 0.9173,
+            "similarity_percentile": 98.1,
+            "overlay_score_1_10": 5.5
+          },
+          {
+            "h3": "87446c22bffffff",
+            "lon": -95.4051,
+            "lat": 30.0389,
+            "population": 6509,
+            "share_25_34": 0.16,
+            "median_hh_income_usd": 70358,
+            "pop_density_per_km2": 1425,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 7,
+            "km_to_nearest_shop_from_centre": 2.38,
+            "rank": 10,
+            "similarity": 0.9149,
+            "similarity_percentile": 97.3,
+            "overlay_score_1_10": 6.97
+          }
+        ],
+        "sources": {
+          "embeddings": "Esri USA Geodemographic Embeddings 2026 (beta, Living Atlas 6637a530b840446285a4383627a13f1f), H3 r7, copied to a local file geodatabase",
+          "acs": "ACS 2020-2024 5-year (B01001, B01003, B19013), tract -> hex by 2020 block-population weights",
+          "shops": "Overture Maps Places release 2026-10-21.0 (coffee_shop / cafe / roastery), cleaned and de-duplicated"
+        },
+        "checks": [
+          {
+            "check": "all_hexes_scored",
+            "status": "pass",
+            "detail": "880 of 880 hexes scored"
+          },
+          {
+            "check": "query_hexes_rank_high",
+            "status": "pass",
+            "detail": "median percentile of the 253 query hexes = 74 (self-consistency)"
+          },
+          {
+            "check": "esri_vs_numpy_fallback",
+            "status": "pass",
+            "detail": "numpy cosine re-implementation Spearman 1.0, max |diff| 1.6e-07"
+          }
+        ],
+        "caveats": [
+          "No sales or revenue data: 'like existing shops' is not the same as 'profitable'.",
+          "H3 r7 hexes are about 5.2 km^2, coarse for a coffee shop whose catchment is often a few blocks.",
+          "Shop locations come from Overture Places; openings, closures and independents with no web presence can be missing.",
+          "Similarity means 'demographically like the query hexes', not 'will succeed'.",
+          "The query is averaged into one vector, so a few very different query hexes blur together.",
+          "USA Geodemographic Embeddings 2026 are a beta dataset; their inputs may include the same ACS fields used by the overlay."
+        ]
+      }
+    },
+    {
+      "type": "mcp_tool_call",
+      "agent": "analysis",
+      "tool": "hot_spots",
+      "input": {
+        "field": "overlay",
+        "top_n": 5
+      },
+      "is_error": false,
+      "seconds": 0.01,
+      "result": {
+        "field": "overlay",
+        "n_hot_95": 67,
+        "n_cold_95": 140,
+        "n_hexes": 880,
+        "hottest": [
+          {
+            "h3": "87446c38effffff",
+            "lon": -95.2104,
+            "lat": 29.9502,
+            "population": 12415,
+            "share_25_34": 0.234,
+            "median_hh_income_usd": 130054,
+            "pop_density_per_km2": 2152,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 7,
+            "km_to_nearest_shop_from_centre": 2.16,
+            "gi_z": 2.95,
+            "p": 0.0032,
+            "overlay": 9.0329
+          },
+          {
+            "h3": "87446dc11ffffff",
+            "lon": -95.7822,
+            "lat": 30.0239,
+            "population": 1816,
+            "share_25_34": 0.177,
+            "median_hh_income_usd": 117737,
+            "pop_density_per_km2": 313,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 1,
+            "km_to_nearest_shop_from_centre": 3.86,
+            "gi_z": 2.65,
+            "p": 0.0081,
+            "overlay": 7.8328
+          },
+          {
+            "h3": "87446c38cffffff",
+            "lon": -95.2352,
+            "lat": 29.9421,
+            "population": 7331,
+            "share_25_34": 0.179,
+            "median_hh_income_usd": 88551,
+            "pop_density_per_km2": 1720,
+            "coffee_shops": 1,
+            "independents": 1,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 8,
+            "km_to_nearest_shop_from_centre": 1.11,
+            "gi_z": 2.53,
+            "p": 0.0114,
+            "overlay": 7.5587
+          },
+          {
+            "h3": "87446c325ffffff",
+            "lon": -95.4246,
+            "lat": 29.7928,
+            "population": 12687,
+            "share_25_34": 0.292,
+            "median_hh_income_usd": 149904,
+            "pop_density_per_km2": 2193,
+            "coffee_shops": 2,
+            "independents": 1,
+            "chains": 1,
+            "shops_in_hex_and_neighbours": 50,
+            "km_to_nearest_shop_from_centre": 1.37,
+            "gi_z": 2.5,
+            "p": 0.0125,
+            "overlay": 7.5648
+          },
+          {
+            "h3": "87446c22cffffff",
+            "lon": -95.4132,
+            "lat": 29.9927,
+            "population": 9976,
+            "share_25_34": 0.172,
+            "median_hh_income_usd": 77024,
+            "pop_density_per_km2": 1827,
+            "coffee_shops": 0,
+            "independents": 0,
+            "chains": 0,
+            "shops_in_hex_and_neighbours": 3,
+            "km_to_nearest_shop_from_centre": 3.84,
+            "gi_z": 2.42,
+            "p": 0.0156,
+            "overlay": 7.6097
+          }
+        ],
+        "sources": {
+          "method": "Getis-Ord Gi*, binary weights = hex + 6 H3 neighbours, numpy (sitesel.core.gi_star)",
+          "table": "results/hex_scores.csv"
+        },
+        "checks": [
+          {
+            "check": "nonconstant_field",
+            "status": "pass",
+            "detail": "std of overlay = 2.554"
+          },
+          {
+            "check": "filled_missing",
+            "status": "pass",
+            "detail": "0 missing values filled with median"
+          },
+          {
+            "check": "matches_arcpy_hotspots",
+            "status": "pass",
+            "detail": "arcpy.stats.HotSpots (contiguity edges+corners): Spearman 1.0, max |dz| 0.0"
+          }
+        ],
+        "caveats": [
+          "No multiple-testing correction (FDR); with ~880 hexes about 44 would pass p<0.05 by chance.",
+          "Hot spots of a score show where high scores cluster, not where any single site is best."
+        ]
+      }
+    },
+    {
+      "type": "api_call",
+      "agent": "analysis",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 14.2,
+      "usage": {
+        "input": 2,
+        "output": 2249,
+        "cache_read": 1974,
+        "cache_write": 8847,
+        "cost_usd": 0.04501
+      }
+    },
+    {
+      "type": "report",
+      "agent": "analysis",
+      "text": "## Results for Harris County, TX: new independent coffee shop\n\n**Engines:** The overlay used default weights of 0.30 density, 0.25 age 25\u201334, 0.20 income and 0.25 competition. Similarity used `precomputed_esri` (Esri embeddings, 253 query hexes). I did not call `hex_profile`, because the ranking outputs already contained each hex's demographics and competition counts. The profiles give no amenity data beyond shop counts.\n\n### Method 1: Overlay top 10 (score, 1\u201310)\n| # | Hex | Lon, Lat | Score | Key drivers |\n|---|---|---|---|---|\n| 1 | 87446c38effffff | -95.2104, 29.9502 | 9.03 | Age 25\u201334 sub-score 10.0, density 9.6; income $130,054; 0 shops in hex, 7 in hex + neighbours |\n| 2 | 87446cb9affffff | -95.3659, 29.5941 | 8.43 | Competition 8.97; 1 chain; 4 shops in ring |\n| 3 | 87446c381ffffff | -95.2144, 29.9271 | 8.4 | Age 25\u201334 10.0; 3 chains; 8 shops in ring |\n| 4 | 87446c265ffffff | -95.542, 30.0594 | 8.36 | Age 25\u201334 10.0; income $129,614; 12 shops in ring |\n| 5 | 87446c39dffffff | -95.1856, 29.9583 | 8.36 | Density 10.0, income $157,311; age 25\u201334 only 0.139 (sub-score 4.97) |\n| 6 | 87446c398ffffff | -95.1609, 29.9664 | 8.26 | Income $149,666; 1 chain |\n| 7 | 87446c392ffffff | -95.0988, 29.9214 | 8.22 | Competition 9.49; 2 shops in ring |\n| 8 | 87446c140ffffff | -95.2504, 29.5886 | 8.2 | Population 7,595; 0 shops in hex |\n| 9 | 87446dc02ffffff | -95.8071, 30.0157 | 8.19 | 0 shops in ring; nearest shop 5.25 km |\n| 10 | 87446c141ffffff | -95.2711, 29.6036 | 8.17 | Income $94,583; 2 shops in ring |\n\n### Method 2: Embedding similarity top 10 (excluding hexes that already have an independent)\n| # | Hex | Lon, Lat | Similarity | Overlay score |\n|---|---|---|---|---|\n| 1 | 87446ddb0ffffff | -95.6483, 29.8498 | 0.9334 | 6.75 |\n| 2 | 87446c15affffff | -95.193, 29.6511 | 0.9283 | 6.38 |\n| 3 | 87446c275ffffff | -95.4715, 30.0608 | 0.9255 | 7.52 |\n| 4 | 87446c35affffff | -95.4548, 30.0227 | 0.9229 | 6.61 |\n| 5 | 87446c361ffffff | -95.566, 29.9207 | 0.9213 | 6.89 |\n| 6 | 87446ca01ffffff | -95.5891, 29.6511 | 0.9208 | 6.71 |\n| 7 | 87446c10bffffff | -95.1392, 29.5599 | 0.9178 | 6.33 |\n| 8 | 87446c3abffffff | -95.2599 , 29.934 | 0.9174 | 7.25 |\n| 9 | 87446ca56ffffff | -95.6226, 29.7273 | 0.9173 | 5.5 |\n| 10 | 87446c22bffffff | -95.4051, 30.0389 | 0.9149 | 6.97 |\n\nThese hexes are dense (1,425\u20133,721 per km\u00b2) and mid-income ($52,228\u2013$99,217). Their competition is heavy: 5\u201332 shops in the ring.\n\n### Agreement\n- **The two top-10 lists share no hexes.** Overlay rewards high income, young adults and few shops. Similarity rewards hexes that look like existing independent-shop areas, which are denser, busier and more competitive.\n- The overlay winners have embedding percentiles of only 43.4\u201382.8. The similarity picks have overlay scores of 5.5\u20137.52.\n- The closest crossover is 87446c275ffffff, which is 3rd on similarity (0.9255) and has an overlay score of 7.52.\n\n### Hot spots (overlay Gi*)\n- 87446c38effffff is the hottest hex (z 2.95, p 0.0032).\n- 87446dc11ffffff is next (z 2.65).\n- Overall, 67 hexes are hot and 140 are cold at 95%.\n\n### Recommended final top 5\nThese are the overlay top 5, because no hex appears in both lists. Hex 87446c38effffff is the strongest, since it ranks first on overlay and is also a statistically significant hot spot.\n1. 87446c38effffff\n2. 87446cb9affffff\n3. 87446c381ffffff\n4. 87446c265ffffff\n5. 87446c39dffffff\n\n- **Zero-shop hexes:** Hexes 1, 4 and 5 have no coffee shops of their own.\n- **Chain competition:** Hex 3 has 3 chains and no independents. Hex 2 has 1 chain.\n- **Demand gaps:** Hexes 4 and 5 may reflect gaps in demand rather than in supply.\n\n### Checks\nAll checks passed: weights sum to 1, scores in range, rank stability, all 880 hexes scored, the Esri vs numpy comparison, and the Gi* check against arcpy. There were no warn or fail results.\n\n### Caveats\n- The data has no sales figures, so a hex that looks like existing shops is not necessarily profitable.\n- Hexes are about 5.2 km\u00b2, which is coarse for a coffee shop's catchment.\n- Overture shop data can be incomplete.\n- The Esri embeddings are a beta dataset.\n- The Gi* test has no multiple-testing correction."
+    },
+    {
+      "type": "api_call",
+      "agent": "manager",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 11.8,
+      "usage": {
+        "input": 2,
+        "output": 1809,
+        "cache_read": 1149,
+        "cache_write": 3124,
+        "cost_usd": 0.02613
+      }
+    },
+    {
+      "type": "manager_brief",
+      "text": "**Brief for the summary writer**\n\n**Question:** Where in Houston (Harris County) should an independent coffee shop open next? The user wants the top 5 areas and the reasons.\n\n**Method 1: overlay suitability**\n- Weights were 0.30 density, 0.25 age 25\u201334, 0.20 income and 0.25 competition (fewer nearby shops scores higher).\n- The top 5 hexes are below. Each hex is about 5 km\u00b2, and the coordinates are lon/lat.\n\n| Rank | Hex | Lon, Lat | Score (1\u201310) | Why |\n|---|---|---|---|---|\n| 1 | 87446c38effffff | -95.21, 29.95 | 9.03 | Age 25\u201334 sub-score 10 and density sub-score 9.6. Income about $130k. No shops in the hex, 7 in the hex plus its neighbours. It is the hottest Gi* hot spot (z 2.95, p 0.003). |\n| 2 | 87446cb9affffff | -95.37, 29.59 | 8.43 | Competition sub-score 8.97. 1 chain, 4 shops in the surrounding ring. |\n| 3 | 87446c381ffffff | -95.21, 29.93 | 8.40 | Age 25\u201334 sub-score 10. 3 chains and no independents. 8 shops in the ring. |\n| 4 | 87446c265ffffff | -95.54, 30.06 | 8.36 | Age 25\u201334 sub-score 10. Income about $130k. No shops in the hex, 12 in the ring. |\n| 5 | 87446c39dffffff | -95.19, 29.96 | 8.36 | Density sub-score 10. Income about $157k. Age 25\u201334 share is only 0.139. No shops in the hex. |\n\n- Ranks 1, 3 and 5 are all in the same northeast cluster, around -95.2, 29.95. The hot-spot test found 67 hot hexes and 140 cold hexes overall, with no multiple-testing correction.\n\n**Method 2: embedding similarity**\n- This ranks hexes by how much they resemble existing independent-shop hexes, using Esri embeddings. Hexes that already have an independent were excluded.\n- The top picks are 87446ddb0ffffff (0.933), 87446c15affffff, 87446c275ffffff, 87446c35affffff and 87446c361ffffff.\n- These hexes are dense (1,425\u20133,721 people per km\u00b2), mid-income ($52k\u2013$99k) and heavily competitive, with 5\u201332 shops in the ring.\n- The closest crossover with the overlay is 87446c275ffffff. It is 3rd on similarity (0.9255) and has an overlay score of 7.52.\n\n**Agreement between methods**\n- The two top-10 lists share no hexes.\n- Top-10% Jaccard overlap is 0.023 (4 shared hexes of 88).\n- Spearman correlation is 0.53 across all hexes, but only 0.035 on unmasked hexes.\n- The overlay favours affluent, young, low-competition hexes. The embeddings favour busy, established, competitive hexes.\n- The final top 5 uses the overlay ranking because there is no overlap. The embedding list is a useful second opinion, for example the crossover hex above.\n\n**Validation**\n- The test used 5 spatial blocks, 880 hexes and 253 hexes that already have an independent shop. It asks whether each method recovers held-out shops.\n\n| Method | AUC (mean, range) | P@k (mean) | P@10 (mean) |\n|---|---|---|---|\n| Overlay | 0.708 (0.55\u20130.81) | 0.43 | 0.40 |\n| Embeddings | 0.743 (0.53\u20130.89) | 0.48 | 0.58 |\n| Random | 0.50 | 0.285 | 0.286 |\n\n- Both methods beat random, but only moderately.\n- Embeddings did somewhat better on average. The overlay's P@10 ranged from 0.1 to 1.0 across blocks.\n- Neither method was useful in every block, and the dense urban core behaves differently from the rest.\n- The ESRI and numpy embedding results are identical, so they are probably the same computation and not independent confirmation.\n- In the held-out blocks, the competition criterion is nearly constant because the shops are hidden. That makes the overlay and overlay-demand-only scores almost identical.\n\n**What cannot be answered reliably**\n- The data has no sales, revenue, rent, lease, foot-traffic, parcel or storefront information. Profitability, specific sites and street-level placement cannot be assessed.\n- Validation measures resemblance to where independents already are. It does not measure whether those shops succeed.\n- Hexes are about 5 km\u00b2, which is coarse for a coffee shop's catchment.\n- Overture shop data may be incomplete. A hex showing zero shops may have shops that are missing from the data.\n- The Esri embeddings are a beta dataset.\n- The overlay's preference for high income and few shops could also mean there is little demand in those hexes.\n- The analysis agent did not pull hex profiles. Amenity detail beyond shop counts is not available.\n\n**Recommendation:** Treat the 5 hexes as areas to investigate further, not as confirmed sites. The northeast cluster around -95.2, 29.95 is the strongest signal. Check actual rents and foot traffic on the ground before committing."
+    },
+    {
+      "type": "api_call",
+      "agent": "summary",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 7.9,
+      "usage": {
+        "input": 4,
+        "output": 1261,
+        "cache_read": 0,
+        "cache_write": 5112,
+        "cost_usd": 0.0254
+      }
+    },
+    {
+      "type": "final_answer",
+      "text": "**1. Direct answer**\nThe data supports a rough shortlist of areas to investigate, not confirmed sites. The overlay method's strongest signal is a northeast cluster near (-95.2, 29.95). The two methods disagree completely, and validation shows only moderate predictive power.\n\n**2. Ranked sites** (each hex is about 5 km\u00b2)\n1. **87446c38effffff** (-95.21, 29.95), score 9.03. It has the top score for young adults aged 25\u201334 (10) and for density (9.6), and income is about $130k. It has no shops of its own and 7 in the hex plus its neighbours. It is also the hottest Gi* hot spot (z 2.95, p 0.003).\n2. **87446cb9affffff** (-95.37, 29.59), score 8.43. Competition is low: 1 chain and 4 shops in the surrounding ring.\n3. **87446c381ffffff** (-95.21, 29.93), score 8.40. Age 25\u201334 sub-score is 10. It has 3 chains, no independents, and 8 shops in the ring.\n4. **87446c265ffffff** (-95.54, 30.06), score 8.36. Age 25\u201334 sub-score is 10 and income is about $130k. It has no shops of its own and 12 in the ring.\n5. **87446c39dffffff** (-95.19, 29.96), score 8.36. Density sub-score is 10 and income is about $157k. The 25\u201334 share is only 0.139, and the hex has no shops of its own.\n\nRanks 1, 3 and 5 sit in the same northeast cluster.\n\n**3. Method agreement**\nThe methods do not agree. The two top-10 lists share no hexes. Top-10% Jaccard overlap is 0.023 (4 of 88 hexes), and Spearman correlation is 0.53 overall but 0.035 on unmasked hexes. The overlay favours affluent, young, low-competition hexes. The embeddings favour dense, mid-income ($52k\u2013$99k), competitive hexes with 5\u201332 shops in the ring. The closest crossover is 87446c275ffffff (-95.47, 30.06), which is 3rd on similarity (0.9255) with an overlay score of 7.52. The top 5 above uses the overlay ranking only.\n\n**Confidence: low**\nThe methods contradict each other, and validation shows only moderate skill.\n\n- **Validation vs random:** Across 5 spatial blocks (880 hexes, 253 with an independent shop), overlay AUC was 0.708 (range 0.55\u20130.81) and embedding AUC was 0.743 (range 0.53\u20130.89), against 0.50 for random. P@10 was 0.40 for overlay (range 0.1\u20131.0) and 0.58 for embeddings, against 0.286 for random. Neither method worked in every block.\n- **What validation measures:** It tests resemblance to existing independent-shop locations, not whether those shops succeed.\n- **Embeddings:** They scored somewhat better than the overlay, yet they did not pick the overlay's sites. The ESRI and numpy results are identical, so they are not independent confirmation. The Esri embeddings are also a beta dataset.\n- **Missing data:** There are no sales, rent, foot-traffic or parcel data. Hexes of about 5 km\u00b2 are coarse for a coffee shop's catchment.\n- **Overture completeness:** Zero-shop hexes may have shops that are missing from the data.\n- **Hot-spot test:** The Gi* test has no multiple-testing correction.\n- **Field checks:**\n  - Whether low-competition, high-income hexes (especially ranks 4 and 5) simply lack demand.\n  - Actual shop counts.\n  - Rents.\n  - Foot traffic.\n  - Specific street-level locations."
+    }
+  ]
+}

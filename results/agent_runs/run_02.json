@@ -1,0 +1,726 @@
+{
+  "label": "run_02",
+  "question": "I'm looking at a storefront at 2700 White Oak Dr, Houston, TX 77007. Is that area a good bet for a new independent coffee shop?",
+  "status": "ok",
+  "run_at": "2026-10-22T20:31:48+00:00",
+  "models": {
+    "manager": "claude-sonnet-5-5",
+    "summary": "claude-sonnet-5-5",
+    "geocode": "claude-haiku-5-5",
+    "data": "claude-haiku-5-5",
+    "analysis": "claude-sonnet-5-5",
+    "validation": "claude-haiku-5-5"
+  },
+  "seconds": 40.7,
+  "cost_usd": 0.0663,
+  "tokens": {
+    "input": 30,
+    "output": 4929,
+    "cache_read": 6900,
+    "cache_write": 16090
+  },
+  "n_api_calls": 10,
+  "n_mcp_tool_calls": 3,
+  "final_answer": "**1. Direct answer**\nThe data cannot say whether this is a good bet. It shows very strong demand and some of the heaviest competition in the county. It does not show the area is untapped. Viability of this storefront depends on rent, sales and foot traffic, none of which this data covers.\n\n**2. Ranked sites**\nOnly one site was assessed. It is not a ranking.\n- **Hex 87446c326ffffff** (about -95.379, 29.786; the address geocodes to -95.388, 29.782). It has 14,388 residents, a density of 2,488 per km\u00b2, 22% aged 25\u201334 and a median household income of about $149k. It also has 11 coffee shops (9 independents, 2 chains: Barnaby's Cafe and Starbucks). The hex plus its 6 neighbours hold 85 shops, which gives the lowest competition sub-score, 1.0. The nearest shop is 0.55 km from the hex centre.\n\n**3. Method agreement**\nThe methods disagree here. The overlay score is 7.57/10 (93.4th percentile, top 10%). The embedding similarity is 0.87 (77.8th percentile, outside the top 10%). The hex is flagged \"overlay only\". Across the county the two methods barely overlap in their top 10%: Jaccard 0.023, with 4 of 88 hexes shared. A high overlay score here partly reflects that shops cluster where demand is high.\n\n**Confidence: low**\nThe data supports \"strong demand, intense competition\" but cannot settle the question you asked.\n\n- **Validation:** Both methods beat random on mean AUC (overlay 0.71, embeddings 0.74, random 0.50). Mean P@10 was 0.40 for overlay and 0.58 for embeddings, against about 0.29 for random. Results varied a lot across the 5 spatial blocks (880 hexes, 253 with an independent shop). The weakest block AUC was 0.55 for overlay and 0.53 for embeddings, and all methods failed the \"every block useful\" check. The dense urban core behaves differently from the rest. Validation only tests whether a method finds hexes that already have a shop, not profitability or survival.\n- **Overlay vs demand-only:** They score almost the same, so the competition criterion adds little in validation. The two embedding engines give identical results, so they are effectively one method.\n- **Data limits:** There is no sales, rent, lease, foot-traffic or parcel data. Hexes cover about 5 km\u00b2, so this describes the neighbourhood, not the storefront. The address position is interpolated and could be off by tens of metres. Embeddings are beta. Overture Places may miss recent openings and closures. Exact ranks and cutoffs were not obtained, only percentiles. The Gi* hot-spot z of 1.76 is below the 1.96 needed for 95% significance.\n- **For a field visit:** Check how the 9 independents differ in concept and whether they would compete directly with you. Check whether they are busy, and whether any have closed or opened recently. Check the rent, and the foot traffic and parking at the storefront itself.",
+  "events": [
+    {
+      "type": "api_call",
+      "agent": "manager",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 2.2,
+      "usage": {
+        "input": 4,
+        "output": 198,
+        "cache_read": 0,
+        "cache_write": 1170,
+        "cost_usd": 0.00491
+      }
+    },
+    {
+      "type": "delegation",
+      "agent": "geocode",
+      "model": "claude-haiku-5-5",
+      "task": "Geocode the address \"2700 White Oak Dr, Houston, TX 77007\" and return the hex id (and coordinates) containing it."
+    },
+    {
+      "type": "api_call",
+      "agent": "geocode",
+      "model": "claude-haiku-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 0.9,
+      "usage": {
+        "input": 4,
+        "output": 66,
+        "cache_read": 0,
+        "cache_write": 908,
+        "cost_usd": 0.00015
+      }
+    },
+    {
+      "type": "delegation",
+      "agent": "validation",
+      "model": "claude-haiku-5-5",
+      "task": "Run validation once: report how well each method (overlay suitability and embedding similarity) recovered held-out coffee shops in Harris County, with all metrics and caveats."
+    },
+    {
+      "type": "api_call",
+      "agent": "validation",
+      "model": "claude-haiku-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 1.1,
+      "usage": {
+        "input": 4,
+        "output": 46,
+        "cache_read": 0,
+        "cache_write": 626,
+        "cost_usd": 0.0001
+      }
+    },
+    {
+      "type": "mcp_tool_call",
+      "agent": "validation",
+      "tool": "validate",
+      "input": {
+        "method": "all"
+      },
+      "is_error": false,
+      "seconds": 0.59,
+      "result": {
+        "design": {
+          "blocks": "k-means k=5 on hex centroids (EPSG:5070), seed 0",
+          "positives": "hexes with >=1 independent coffee shop",
+          "n_hexes": 880,
+          "n_positive_hexes": 253,
+          "random_orderings_per_block": 2000,
+          "esri_tool_included": true
+        },
+        "per_method_mean_min_max": {
+          "overlay": {
+            "auc": {
+              "mean": 0.708,
+              "min": 0.55,
+              "max": 0.81
+            },
+            "p_at_k": {
+              "mean": 0.427,
+              "min": 0.273,
+              "max": 0.703
+            },
+            "p_at_10": {
+              "mean": 0.4,
+              "min": 0.1,
+              "max": 1.0
+            }
+          },
+          "overlay_demand_only": {
+            "auc": {
+              "mean": 0.707,
+              "min": 0.549,
+              "max": 0.812
+            },
+            "p_at_k": {
+              "mean": 0.429,
+              "min": 0.273,
+              "max": 0.683
+            },
+            "p_at_10": {
+              "mean": 0.4,
+              "min": 0.1,
+              "max": 1.0
+            }
+          },
+          "embeddings_numpy": {
+            "auc": {
+              "mean": 0.743,
+              "min": 0.528,
+              "max": 0.886
+            },
+            "p_at_k": {
+              "mean": 0.484,
+              "min": 0.318,
+              "max": 0.629
+            },
+            "p_at_10": {
+              "mean": 0.58,
+              "min": 0.4,
+              "max": 0.8
+            }
+          },
+          "embeddings_esri": {
+            "auc": {
+              "mean": 0.743,
+              "min": 0.528,
+              "max": 0.886
+            },
+            "p_at_k": {
+              "mean": 0.484,
+              "min": 0.318,
+              "max": 0.629
+            },
+            "p_at_10": {
+              "mean": 0.58,
+              "min": 0.4,
+              "max": 0.8
+            }
+          },
+          "random": {
+            "auc": {
+              "mean": 0.5,
+              "min": 0.499,
+              "max": 0.502
+            },
+            "p_at_k": {
+              "mean": 0.285,
+              "min": 0.127,
+              "max": 0.534
+            },
+            "p_at_10": {
+              "mean": 0.286,
+              "min": 0.127,
+              "max": 0.537
+            }
+          }
+        },
+        "per_block": [
+          {
+            "block": 0,
+            "method": "overlay",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.744,
+            "p_at_k": 0.703,
+            "p_at_10": 1.0
+          },
+          {
+            "block": 0,
+            "method": "overlay_demand_only",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.737,
+            "p_at_k": 0.683,
+            "p_at_10": 1.0
+          },
+          {
+            "block": 0,
+            "method": "embeddings_numpy",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.528,
+            "p_at_k": 0.525,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 0,
+            "method": "embeddings_esri",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.528,
+            "p_at_k": 0.525,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 0,
+            "method": "random",
+            "n_hexes": 189,
+            "n_pos": 101,
+            "auc": 0.5,
+            "p_at_k": 0.534,
+            "p_at_10": 0.537
+          },
+          {
+            "block": 1,
+            "method": "overlay",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.55,
+            "p_at_k": 0.373,
+            "p_at_10": 0.1
+          },
+          {
+            "block": 1,
+            "method": "overlay_demand_only",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.549,
+            "p_at_k": 0.373,
+            "p_at_10": 0.1
+          },
+          {
+            "block": 1,
+            "method": "embeddings_numpy",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.697,
+            "p_at_k": 0.471,
+            "p_at_10": 0.7
+          },
+          {
+            "block": 1,
+            "method": "embeddings_esri",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.697,
+            "p_at_k": 0.471,
+            "p_at_10": 0.7
+          },
+          {
+            "block": 1,
+            "method": "random",
+            "n_hexes": 156,
+            "n_pos": 51,
+            "auc": 0.499,
+            "p_at_k": 0.326,
+            "p_at_10": 0.326
+          },
+          {
+            "block": 2,
+            "method": "overlay",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.762,
+            "p_at_k": 0.273,
+            "p_at_10": 0.2
+          },
+          {
+            "block": 2,
+            "method": "overlay_demand_only",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.761,
+            "p_at_k": 0.273,
+            "p_at_10": 0.2
+          },
+          {
+            "block": 2,
+            "method": "embeddings_numpy",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.818,
+            "p_at_k": 0.318,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 2,
+            "method": "embeddings_esri",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.818,
+            "p_at_k": 0.318,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 2,
+            "method": "random",
+            "n_hexes": 174,
+            "n_pos": 22,
+            "auc": 0.499,
+            "p_at_k": 0.127,
+            "p_at_10": 0.127
+          },
+          {
+            "block": 3,
+            "method": "overlay",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.81,
+            "p_at_k": 0.4,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 3,
+            "method": "overlay_demand_only",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.812,
+            "p_at_k": 0.429,
+            "p_at_10": 0.4
+          },
+          {
+            "block": 3,
+            "method": "embeddings_numpy",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.886,
+            "p_at_k": 0.629,
+            "p_at_10": 0.8
+          },
+          {
+            "block": 3,
+            "method": "embeddings_esri",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.886,
+            "p_at_k": 0.629,
+            "p_at_10": 0.8
+          },
+          {
+            "block": 3,
+            "method": "random",
+            "n_hexes": 174,
+            "n_pos": 35,
+            "auc": 0.5,
+            "p_at_k": 0.201,
+            "p_at_10": 0.204
+          },
+          {
+            "block": 4,
+            "method": "overlay",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.676,
+            "p_at_k": 0.386,
+            "p_at_10": 0.3
+          },
+          {
+            "block": 4,
+            "method": "overlay_demand_only",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.675,
+            "p_at_k": 0.386,
+            "p_at_10": 0.3
+          },
+          {
+            "block": 4,
+            "method": "embeddings_numpy",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.784,
+            "p_at_k": 0.477,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 4,
+            "method": "embeddings_esri",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.784,
+            "p_at_k": 0.477,
+            "p_at_10": 0.5
+          },
+          {
+            "block": 4,
+            "method": "random",
+            "n_hexes": 187,
+            "n_pos": 44,
+            "auc": 0.502,
+            "p_at_k": 0.238,
+            "p_at_10": 0.235
+          }
+        ],
+        "method_agreement": {
+          "top10_jaccard": 0.023,
+          "top10_both": 4,
+          "top10_size": 88,
+          "spearman_all": 0.532,
+          "spearman_unmasked": 0.035
+        },
+        "sources": {
+          "script": "pipeline/validate.py",
+          "files": [
+            "results/validation.json",
+            "results/validation_blocks.csv"
+          ]
+        },
+        "checks": [
+          {
+            "check": "overlay_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.708 (range 0.55-0.81), P@k 0.427 vs random 0.285"
+          },
+          {
+            "check": "overlay_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.55"
+          },
+          {
+            "check": "overlay_demand_only_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.707 (range 0.549-0.812), P@k 0.429 vs random 0.285"
+          },
+          {
+            "check": "overlay_demand_only_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.549"
+          },
+          {
+            "check": "embeddings_numpy_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.743 (range 0.528-0.886), P@k 0.484 vs random 0.285"
+          },
+          {
+            "check": "embeddings_numpy_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.528"
+          },
+          {
+            "check": "embeddings_esri_beats_random",
+            "status": "pass",
+            "detail": "AUC 0.743 (range 0.528-0.886), P@k 0.484 vs random 0.285"
+          },
+          {
+            "check": "embeddings_esri_every_block_useful",
+            "status": "warn",
+            "detail": "weakest block AUC 0.528"
+          }
+        ],
+        "caveats": [
+          "Positives are hexes that already have an independent shop: this measures 'finds places like where shops are', not profitability or survival.",
+          "Only 5 blocks; the min-max range is wide and one block (the dense urban core) behaves differently.",
+          "Within a held-out block the competition criterion is nearly constant (its shops are hidden), so overlay and overlay_demand_only score almost the same there."
+        ]
+      }
+    },
+    {
+      "type": "api_call",
+      "agent": "validation",
+      "model": "claude-haiku-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 3.9,
+      "usage": {
+        "input": 2,
+        "output": 856,
+        "cache_read": 626,
+        "cache_write": 3907,
+        "cost_usd": 0.00092
+      }
+    },
+    {
+      "type": "report",
+      "agent": "validation",
+      "text": "**Validation (5 spatial blocks, 880 hexes, 253 positive hexes)**\n\n| Method | Mean AUC (min\u2013max) | Mean P@k (min\u2013max) | Mean P@10 (min\u2013max) |\n|---|---|---|---|\n| Overlay | 0.708 (0.55\u20130.81) | 0.427 (0.273\u20130.703) | 0.40 (0.1\u20131.0) |\n| Overlay, demand only | 0.707 (0.549\u20130.812) | 0.429 (0.273\u20130.683) | 0.40 (0.1\u20131.0) |\n| Embeddings (numpy) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.58 (0.4\u20130.8) |\n| Embeddings (ESRI) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.58 (0.4\u20130.8) |\n| Random | 0.50 (0.499\u20130.502) | 0.285 (0.127\u20130.534) | 0.286 (0.127\u20130.537) |\n\n- **Weakest block:** Overlay and overlay-demand-only are weakest in block 1 (AUC 0.55). Embeddings are weakest in block 0 (AUC 0.528).\n- **Method agreement:** Top-10% Jaccard is 0.023 (4 shared out of 88). Spearman is 0.532 overall and 0.035 on unmasked hexes.\n- **Checks:** All methods beat random on mean AUC. All fail the \"every block useful\" check (warn), because the weakest block AUC is near 0.5 for each method.\n\n**Caveats**\n- Positives mean a hex already has an independent shop. This measures similarity to existing shop locations, not profitability or survival.\n- Only 5 blocks, so the min\u2013max ranges are wide. The tool notes one block (the dense urban core) behaves differently.\n- Inside a held-out block the competition criterion is nearly constant, so overlay and demand-only score almost the same.\n- The ESRI and numpy embedding results are identical, so they are effectively one method here."
+    },
+    {
+      "type": "mcp_tool_call",
+      "agent": "geocode",
+      "tool": "geocode",
+      "input": {
+        "address": "2700 White Oak Dr, Houston, TX 77007"
+      },
+      "is_error": false,
+      "seconds": 5.64,
+      "result": {
+        "matched": true,
+        "matched_address": "2700 WHITE OAK DR, HOUSTON, TX, 77007",
+        "lon": -95.387745,
+        "lat": 29.781683,
+        "h3": "87446c326ffffff",
+        "in_study_area": true,
+        "n_candidates": 1,
+        "sources": {
+          "geocoder": "U.S. Census Geocoder, benchmark Public_AR_Current (free, no ArcGIS credits)"
+        },
+        "checks": [
+          {
+            "check": "address_matched",
+            "status": "pass",
+            "detail": "2700 WHITE OAK DR, HOUSTON, TX, 77007"
+          },
+          {
+            "check": "in_study_area",
+            "status": "pass",
+            "detail": "hex is in the Harris County study area"
+          }
+        ],
+        "caveats": [
+          "Address-range interpolation: position can be off by tens of metres."
+        ]
+      }
+    },
+    {
+      "type": "api_call",
+      "agent": "geocode",
+      "model": "claude-haiku-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 1.0,
+      "usage": {
+        "input": 2,
+        "output": 135,
+        "cache_read": 908,
+        "cache_write": 392,
+        "cost_usd": 0.00013
+      }
+    },
+    {
+      "type": "report",
+      "agent": "geocode",
+      "text": "Matched: 2700 WHITE OAK DR, HOUSTON, TX 77007\n- Coordinates: lon -95.387745, lat 29.781683\n- H3 hex (r7): 87446c326ffffff\n- In Harris County study area: yes\n\nChecks: address matched (pass), in study area (pass). Caveat: the position is interpolated from the address range, so it can be off by tens of metres."
+    },
+    {
+      "type": "api_call",
+      "agent": "manager",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 2.2,
+      "usage": {
+        "input": 2,
+        "output": 157,
+        "cache_read": 1170,
+        "cache_write": 1099,
+        "cost_usd": 0.00456
+      }
+    },
+    {
+      "type": "delegation",
+      "agent": "analysis",
+      "model": "claude-sonnet-5-5",
+      "task": "For H3 hex 87446c326ffffff (Harris County), report its overlay suitability score and rank (of all hexes), its embedding similarity score and rank, whether the two methods agree for this hex, and key profile features (demand, competition, existing independent shop count, any masking). Also give the top-10% cutoffs for context."
+    },
+    {
+      "type": "api_call",
+      "agent": "analysis",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "tool_use",
+      "seconds": 1.4,
+      "usage": {
+        "input": 4,
+        "output": 59,
+        "cache_read": 0,
+        "cache_write": 1927,
+        "cost_usd": 0.00542
+      }
+    },
+    {
+      "type": "mcp_tool_call",
+      "agent": "analysis",
+      "tool": "hex_profile",
+      "input": {
+        "h3_id": "87446c326ffffff"
+      },
+      "is_error": false,
+      "seconds": 0.03,
+      "result": {
+        "hex": {
+          "h3": "87446c326ffffff",
+          "lon": -95.3791,
+          "lat": 29.786,
+          "population": 14388,
+          "share_25_34": 0.22,
+          "median_hh_income_usd": 148715,
+          "pop_density_per_km2": 2488,
+          "coffee_shops": 11,
+          "independents": 9,
+          "chains": 2,
+          "shops_in_hex_and_neighbours": 85,
+          "km_to_nearest_shop_from_centre": 0.55,
+          "overlay_score_1_10": 7.57,
+          "overlay_percentile": 93.4,
+          "overlay_masked": false,
+          "overlay_subscores_1_10": {
+            "pop_density_km2": 9.77,
+            "share_25_34": 9.91,
+            "med_hh_income": 9.55,
+            "n_shops_ring1": 1.0
+          },
+          "embedding_similarity": 0.8705,
+          "embedding_percentile": 77.8,
+          "agreement_top10": "overlay only",
+          "overlay_hot_spot_gi_z": 1.76
+        },
+        "shop_names": {
+          "independent": [
+            "A 2nd Cup",
+            "Active Passion Coffee & Cafe",
+            "Antidote Coffee",
+            "El Gato Coffeehouse",
+            "Latin World Cafe",
+            "New Heights Coffee Roasters",
+            "Rivas Coffee, Cocktails & Kitchen",
+            "The Coffee Garden",
+            "Uncle Bean\u2019s Coffee"
+          ],
+          "chain": [
+            "Barnaby's Cafe",
+            "Starbucks Coffee Company"
+          ]
+        },
+        "sources": {
+          "acs": "ACS 2020-2024 5-year (B01001, B01003, B19013), tract -> hex by 2020 block-population weights",
+          "shops": "Overture Maps Places release 2026-10-21.0 (coffee_shop / cafe / roastery), cleaned and de-duplicated",
+          "embedding_scores": "emb_esri",
+          "embeddings": "Esri USA Geodemographic Embeddings 2026 (beta, Living Atlas 6637a530b840446285a4383627a13f1f), H3 r7, copied to a local file geodatabase",
+          "table": "results/hex_scores.csv"
+        },
+        "checks": [
+          {
+            "check": "population_present",
+            "status": "pass",
+            "detail": "14388 residents allocated"
+          },
+          {
+            "check": "mostly_in_study_area",
+            "status": "pass",
+            "detail": "100% of the hex is inside the county"
+          },
+          {
+            "check": "not_masked",
+            "status": "pass",
+            "detail": "overlay mask: pop >= 500 and land >= 1 km^2"
+          }
+        ],
+        "caveats": [
+          "No sales or revenue data: 'like existing shops' is not the same as 'profitable'.",
+          "H3 r7 hexes are about 5.2 km^2, coarse for a coffee shop whose catchment is often a few blocks.",
+          "Shop locations come from Overture Places; openings, closures and independents with no web presence can be missing.",
+          "Median household income for a hex is a population-weighted mean of tract medians, not a true median."
+        ]
+      }
+    },
+    {
+      "type": "api_call",
+      "agent": "analysis",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 9.5,
+      "usage": {
+        "input": 2,
+        "output": 1286,
+        "cache_read": 1927,
+        "cache_write": 1190,
+        "cost_usd": 0.01622
+      }
+    },
+    {
+      "type": "report",
+      "agent": "analysis",
+      "text": "**Hex 87446c326ffffff** (lon -95.3791, lat 29.786, Harris County)\n\n**Overlay suitability (method 1)**\n- The score is **7.57** out of 10, at the **93.4th percentile**.\n- The hex is not masked. It has 14,388 residents and is 100% inside the county.\n- Sub-scores:\n\n| Criterion | Sub-score | Hex value |\n|---|---|---|\n| Population density | 9.77 | 2,488 per km\u00b2 |\n| Share aged 25\u201334 | 9.91 | 0.22 |\n| Median household income | 9.55 | $148,715 |\n| Shops in the ring (competition) | 1.0 | 85 |\n\n- The Gi* hot-spot z is 1.76. That is positive but below the 1.96 needed for 95% significance.\n\n**Embedding similarity (method 2)**\n- The score is **0.8705**, at the **77.8th percentile**.\n- I did not run `find_similar`, so I don't know which engine produced this score. The profile labels it `emb_esri`.\n\n**Agreement**\n- The two methods **disagree** for this hex. The profile class is **\"overlay only\"**: it is in the overlay top 10% but not the embedding top 10%.\n- Demand is very strong, but the hex is already crowded. The embedding sits closer to the middle of the range, at the 77.8th percentile.\n\n**Competition and existing shops**\n- The hex holds 11 coffee shops: **9 independents** and 2 chains.\n- The ring (hex plus 6 neighbours) holds 85 shops. That gives the lowest possible competition sub-score of 1.0.\n- The nearest shop is 0.55 km from the hex centre.\n- The independents are A 2nd Cup, Active Passion Coffee & Cafe, Antidote Coffee, El Gato Coffeehouse, Latin World Cafe, New Heights Coffee Roasters, Rivas Coffee Cocktails & Kitchen, The Coffee Garden and Uncle Bean's Coffee.\n- The chains are Barnaby's Cafe and Starbucks.\n- Because the hex already has independents, it would not count as an untapped look-alike under `find_similar` with `exclude_existing`.\n\n**Rank and top-10% cutoffs**\n- I can't give exact ranks or cutoff values. The profile tool returns percentiles only, and I did not run a ranked list.\n- Percentiles are the best context I have. The overlay percentile (93.4) is above the 90th, so the hex is in the overlay top 10%. The embedding percentile (77.8) is below the 90th, so it is outside the embedding top 10%.\n- I can run `overlay_suitability` and `find_similar` with top_n up to 50 to look for the hex and estimate the cutoffs. Tell me if you want that.\n\n**Checks**\n- All three checks passed: population present, mostly in study area, and not masked.\n- No warn or fail results.\n\n**Caveats**\n- There is no sales data, so a high score does not mean the hex would be profitable.\n- Hexes cover about 5.2 km\u00b2, which is coarse for a coffee shop catchment.\n- Overture Places may be missing some openings, closures or independents.\n- Hex income is a population-weighted mean of tract medians, not a true median."
+    },
+    {
+      "type": "api_call",
+      "agent": "manager",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 9.5,
+      "usage": {
+        "input": 2,
+        "output": 1111,
+        "cache_read": 2269,
+        "cache_write": 1252,
+        "cost_usd": 0.0147
+      }
+    },
+    {
+      "type": "manager_brief",
+      "text": "**Brief for the summary writer**\n\n**Question:** Is the area around 2700 White Oak Dr, Houston 77007 a good bet for a new independent coffee shop?\n\n**Location:** The address geocoded to hex 87446c326ffffff, which is inside the study area. The position is interpolated, so it could be off by tens of metres. The hex covers about 5 km\u00b2, so the result describes the neighbourhood and not the specific storefront.\n\n**Overlay suitability (demand and competition):**\n- The hex scores 7.57/10, at the 93.4th percentile, which puts it in the top 10%.\n- Demand is very strong:\n\n| Demand measure | Value |\n|---|---|\n| Residents | 14,388 |\n| Population density | 2,488 per km\u00b2 |\n| Share aged 25\u201334 | 22% |\n| Median household income | about $149k |\n\n- Competition is at the worst possible level. The hex plus its 6 neighbours hold 85 shops, which gives the lowest competition sub-score of 1.0.\n- The hex itself holds 11 shops: 9 independents and 2 chains (Barnaby's Cafe and Starbucks). The nearest shop is 0.55 km from the hex centre.\n- The hot-spot z-score is 1.76, which is positive but short of the 1.96 needed for 95% significance.\n\n**Embedding similarity (resemblance to existing shop areas):**\n- The hex scores 0.87, at the 77.8th percentile, which is outside the top 10%.\n- The two methods disagree for this hex. It is flagged \"overlay only\".\n- Because it already has independents, it would not count as an untapped look-alike.\n\n**Validation (5 spatial blocks, 880 hexes, 253 hexes with an independent shop):**\n\n| Method | Mean AUC | Mean P@10 |\n|---|---|---|\n| Overlay | 0.71 | 0.40 |\n| Embeddings | 0.74 | 0.58 |\n| Random | 0.50 | about 0.29 |\n\n- Both methods beat random, but results vary a lot between blocks. The weakest block has an AUC of about 0.53\u20130.55, and the dense urban core behaves differently.\n- The two methods barely overlap in their top 10%: Jaccard is 0.023, with 4 of 88 hexes shared.\n- The overlay and demand-only variants perform almost the same. The two embedding engines give identical results, so they are effectively one method.\n- Validation only measures whether a method recovers hexes that already have a shop. It does not measure profitability or survival.\n\n**Interpretation:** Demand is excellent, but the area is already one of the most saturated in the county. A high overlay score here partly reflects that shops cluster where demand is high. The data cannot show whether the area is a good bet for a new shop or an oversupplied one. It supports \"strong demand, intense competition\". It does not support \"untapped\".\n\n**What the data cannot answer:**\n- It has no sales, revenue, rent, lease, foot-traffic, parcel or storefront data. It cannot say whether this storefront is viable, what the rent is, or whether the existing shops are doing well.\n- It cannot show how much the 9 independents differ from one another in concept, or whether they would compete directly with a new shop.\n- Shop listings may be missing recent openings and closures.\n- I did not obtain exact ranks or cutoffs, only percentiles."
+    },
+    {
+      "type": "api_call",
+      "agent": "summary",
+      "model": "claude-sonnet-5-5",
+      "stop_reason": "end_turn",
+      "seconds": 7.3,
+      "usage": {
+        "input": 4,
+        "output": 1015,
+        "cache_read": 0,
+        "cache_write": 3619,
+        "cost_usd": 0.01921
+      }
+    },
+    {
+      "type": "final_answer",
+      "text": "**1. Direct answer**\nThe data cannot say whether this is a good bet. It shows very strong demand and some of the heaviest competition in the county. It does not show the area is untapped. Viability of this storefront depends on rent, sales and foot traffic, none of which this data covers.\n\n**2. Ranked sites**\nOnly one site was assessed. It is not a ranking.\n- **Hex 87446c326ffffff** (about -95.379, 29.786; the address geocodes to -95.388, 29.782). It has 14,388 residents, a density of 2,488 per km\u00b2, 22% aged 25\u201334 and a median household income of about $149k. It also has 11 coffee shops (9 independents, 2 chains: Barnaby's Cafe and Starbucks). The hex plus its 6 neighbours hold 85 shops, which gives the lowest competition sub-score, 1.0. The nearest shop is 0.55 km from the hex centre.\n\n**3. Method agreement**\nThe methods disagree here. The overlay score is 7.57/10 (93.4th percentile, top 10%). The embedding similarity is 0.87 (77.8th percentile, outside the top 10%). The hex is flagged \"overlay only\". Across the county the two methods barely overlap in their top 10%: Jaccard 0.023, with 4 of 88 hexes shared. A high overlay score here partly reflects that shops cluster where demand is high.\n\n**Confidence: low**\nThe data supports \"strong demand, intense competition\" but cannot settle the question you asked.\n\n- **Validation:** Both methods beat random on mean AUC (overlay 0.71, embeddings 0.74, random 0.50). Mean P@10 was 0.40 for overlay and 0.58 for embeddings, against about 0.29 for random. Results varied a lot across the 5 spatial blocks (880 hexes, 253 with an independent shop). The weakest block AUC was 0.55 for overlay and 0.53 for embeddings, and all methods failed the \"every block useful\" check. The dense urban core behaves differently from the rest. Validation only tests whether a method finds hexes that already have a shop, not profitability or survival.\n- **Overlay vs demand-only:** They score almost the same, so the competition criterion adds little in validation. The two embedding engines give identical results, so they are effectively one method.\n- **Data limits:** There is no sales, rent, lease, foot-traffic or parcel data. Hexes cover about 5 km\u00b2, so this describes the neighbourhood, not the storefront. The address position is interpolated and could be off by tens of metres. Embeddings are beta. Overture Places may miss recent openings and closures. Exact ranks and cutoffs were not obtained, only percentiles. The Gi* hot-spot z of 1.76 is below the 1.96 needed for 95% significance.\n- **For a field visit:** Check how the 9 independents differ in concept and whether they would compete directly with you. Check whether they are busy, and whether any have closed or opened recently. Check the rent, and the foot traffic and parking at the storefront itself."
+    }
+  ]
+}
