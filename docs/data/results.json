@@ -1,0 +1,126 @@
+{
+ "validation": {
+  "design": {
+   "blocks": "k-means k=5 on hex centroids (EPSG:5070), seed 0",
+   "positives": "hexes with >=1 independent coffee shop",
+   "n_hexes": 880,
+   "n_positive_hexes": 253,
+   "random_orderings_per_block": 2000,
+   "esri_tool_included": true
+  },
+  "per_method": {
+   "overlay": {
+    "auc": {
+     "mean": 0.708,
+     "min": 0.55,
+     "max": 0.81
+    },
+    "p_at_k": {
+     "mean": 0.427,
+     "min": 0.273,
+     "max": 0.703
+    },
+    "p_at_10": {
+     "mean": 0.4,
+     "min": 0.1,
+     "max": 1.0
+    }
+   },
+   "overlay_demand_only": {
+    "auc": {
+     "mean": 0.707,
+     "min": 0.549,
+     "max": 0.812
+    },
+    "p_at_k": {
+     "mean": 0.429,
+     "min": 0.273,
+     "max": 0.683
+    },
+    "p_at_10": {
+     "mean": 0.4,
+     "min": 0.1,
+     "max": 1.0
+    }
+   },
+   "embeddings_numpy": {
+    "auc": {
+     "mean": 0.743,
+     "min": 0.528,
+     "max": 0.886
+    },
+    "p_at_k": {
+     "mean": 0.484,
+     "min": 0.318,
+     "max": 0.629
+    },
+    "p_at_10": {
+     "mean": 0.58,
+     "min": 0.4,
+     "max": 0.8
+    }
+   },
+   "embeddings_esri": {
+    "auc": {
+     "mean": 0.743,
+     "min": 0.528,
+     "max": 0.886
+    },
+    "p_at_k": {
+     "mean": 0.484,
+     "min": 0.318,
+     "max": 0.629
+    },
+    "p_at_10": {
+     "mean": 0.58,
+     "min": 0.4,
+     "max": 0.8
+    }
+   },
+   "random": {
+    "auc": {
+     "mean": 0.5,
+     "min": 0.499,
+     "max": 0.502
+    },
+    "p_at_k": {
+     "mean": 0.285,
+     "min": 0.127,
+     "max": 0.534
+    },
+    "p_at_10": {
+     "mean": 0.286,
+     "min": 0.127,
+     "max": 0.537
+    }
+   }
+  }
+ },
+ "summary": {
+  "n_hexes": 880,
+  "n_query_hexes": 253,
+  "overlay_weights": {
+   "pop_density_km2": 0.3,
+   "share_25_34": 0.25,
+   "med_hh_income": 0.2,
+   "n_shops_ring1": 0.25
+  },
+  "esri_vs_numpy": {
+   "spearman": 1.0,
+   "max_abs_diff": 1.648376352081371e-07,
+   "top10_jaccard": 1.0
+  },
+  "embedding_source": "emb_esri",
+  "method_agreement": {
+   "top10_jaccard": 0.023,
+   "top10_both": 4,
+   "top10_size": 88,
+   "spearman_all": 0.532,
+   "spearman_unmasked": 0.035
+  },
+  "gi_numpy_vs_arcpy": {
+   "spearman": 1.0,
+   "max_abs_z_diff": 0.0
+  }
+ }
+}
