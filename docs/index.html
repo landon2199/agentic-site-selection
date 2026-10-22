@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Site Selection</title>
+<meta name="description" content="Where should an independent coffee shop open in Houston? Weighted overlay vs Esri geodemographic embeddings on H3 hexes, validated on held-out shops, with five saved agent runs.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<style>
+  :root { --ink:#1f2933; --muted:#5f6b7a; --panel:#ffffff; --line:#e3e3df; --accent:#b4432f; --bg:#f6f5f1; --code:#efeee9; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --ink:#eef0f2; --muted:#a3a9b3; --panel:#1b1f26; --line:#333a44; --accent:#ff8a65; --bg:#111418; --code:#232831; }
+  }
+  :root[data-theme="dark"] { --ink:#eef0f2; --muted:#a3a9b3; --panel:#1b1f26; --line:#333a44; --accent:#ff8a65; --bg:#111418; --code:#232831; }
+  html, body { margin:0; background:var(--bg); color:var(--ink);
+    font: 15px/1.5 "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
+  header, main { max-width:1080px; margin:0 auto; padding:0 16px; }
+  header { padding-top:22px; }
+  h1 { font-size:24px; margin:0 0 4px; }
+  h2 { font-size:18px; margin:28px 0 8px; }
+  .sub { color:var(--muted); margin:0 0 14px; max-width:760px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+  .tabs button { font:inherit; font-size:13.5px; padding:6px 11px; border-radius:7px; cursor:pointer;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink); }
+  .tabs button[aria-pressed="true"] { background:var(--accent); border-color:var(--accent); color:#fff; }
+  #map { height:62vh; min-height:380px; border-radius:10px; border:1px solid var(--line); }
+  .legend { display:flex; flex-wrap:wrap; gap:10px; font-size:12.5px; color:var(--muted); margin-top:8px; align-items:center; }
+  .sw { display:inline-block; width:14px; height:12px; border-radius:2px; margin-right:5px; vertical-align:-1px; border:1px solid #0002; }
+  .ramp { width:160px; height:10px; border-radius:3px; display:inline-block; border:1px solid #0002; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:12px 0; }
+  .stat { background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:10px 12px; }
+  .stat b { display:block; font-size:22px; }
+  .stat span { font-size:12.5px; color:var(--muted); }
+  .tablewrap { overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; background:var(--panel); border:1px solid var(--line); border-radius:8px; font-size:14px; }
+  th, td { padding:7px 10px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap; }
+  th:first-child, td:first-child { text-align:left; }
+  th { font-weight:600; color:var(--muted); font-size:12.5px; }
+  details { background:var(--panel); border:1px solid var(--line); border-radius:9px; margin:10px 0; padding:10px 14px; }
+  summary { cursor:pointer; font-weight:600; }
+  summary small { font-weight:400; color:var(--muted); }
+  .answer { border-left:3px solid var(--accent); padding-left:12px; margin:10px 0; }
+  .answer :is(h1,h2,h3) { font-size:15px; }
+  .steps { font-size:13px; color:var(--muted); }
+  .steps li { margin:3px 0; }
+  code { background:var(--code); padding:1px 4px; border-radius:4px; font-size:12.5px; word-break:break-word; }
+  .note { font-size:13px; color:var(--muted); }
+  a { color:var(--accent); }
+  footer { max-width:1080px; margin:30px auto; padding:0 16px 30px; font-size:12.5px; color:var(--muted); }
+  .tip { font-size:12.5px; line-height:1.35; color:#1f2933; }
+  .maplibregl-popup-content { border-radius:8px; padding:8px 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Where should an independent coffee shop open in Houston?</h1>
+  <p class="sub">880 H3 hexes (about 5 km² each) across Harris County, scored two ways: an expert-weighted overlay of census
+    demographics and competition, and Esri's USA Geodemographic Embeddings ("places like where independent shops already are").
+    Both were tested on shops hidden from them. A manager agent and five subagents answer questions through a local MCP server;
+    five saved runs are below.</p>
+</header>
+<main>
+  <div class="tabs" role="group" aria-label="Map layer">
+    <button data-mode="overlay" aria-pressed="true">Method 1: overlay score</button>
+    <button data-mode="emb" aria-pressed="false">Method 2: embedding similarity</button>
+    <button data-mode="agreement" aria-pressed="false">Agreement (top 10%)</button>
+    <button data-mode="shops" aria-pressed="false">Independent shops</button>
+  </div>
+  <div id="map" role="region" aria-label="Map of Harris County hexes"></div>
+  <div class="legend" id="legend"></div>
+
+  <h2>How well does each method find held-out shops?</h2>
+  <p class="note">Five spatial blocks (k-means on hex centroids). For each block, its shops were hidden, the embedding query was
+    rebuilt from the other four blocks and the overlay's competition term was recomputed without them. AUC compares shop hexes
+    with non-shop hexes in the block (0.5 = random); P@k is the share of shop hexes among the block's top k, where k is the number
+    of shop hexes. Mean, with the range across the five blocks in brackets.</p>
+  <div class="tablewrap"><table id="valtable"></table></div>
+  <div class="stats" id="stats"></div>
+
+  <h2>Five saved agent runs</h2>
+  <p class="note">Recorded live on the run date shown; the page itself makes no API calls. Each run lists the delegations and
+    MCP tool calls, then the summary agent's answer. Run 5 is a question the data cannot answer.</p>
+  <div id="runs"></div>
+</main>
+<footer>
+  Data: U.S. Census Bureau ACS 2020-2024 5-year and 2020 Census blocks; Overture Maps Places (CDLA Permissive 2.0);
+  derived similarity scores from Esri USA Geodemographic Embeddings 2026 (beta; Esri Master License Agreement; the embedding
+  vectors themselves are not published). H3 grid by Uber. Basemap <a href="https://openfreemap.org">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/">OpenMapTiles</a>
+  data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors. No sales data: "like existing shops" is not "profitable".
+  Code and method: <a href="https://github.com/landon2199/agentic-site-selection">agentic-site-selection</a>.
+</footer>
+<script>
+const COLORS = { both:'#b4432f', 'overlay only':'#e9a23b', 'embeddings only':'#3b7dd8', neither:'#d9d9d4' };
+const SEQ = ['#fff5eb','#fdd0a2','#fd8d3c','#d94801','#7f2704'];
+const BLUES = ['#f1f7fd','#c6dbef','#6baed6','#2171b5','#08306b'];
+let mode = 'overlay', hexes;
+
+const map = new maplibregl.Map({
+  container: 'map', center: [-95.4, 29.83], zoom: 8.6, attributionControl: { compact: true },
+  style: 'https://tiles.openfreemap.org/styles/positron'
+});
+map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+
+function quantiles(vals, n) {
+  const s = vals.filter(v => v != null && !isNaN(v)).sort((a, b) => a - b);
+  return Array.from({ length: n - 1 }, (_, i) => s[Math.floor(s.length * (i + 1) / n)]);
+}
+function stepExpr(field, breaks, colors) {
+  const e = ['step', ['get', field], colors[0]];
+  breaks.forEach((b, i) => e.push(b, colors[i + 1]));
+  return e;
+}
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === m));
+  const vals = f => hexes.features.map(x => x.properties[f]);
+  let color, legend;
+  if (m === 'overlay' || m === 'emb') {
+    const br = quantiles(vals(m), 5), pal = m === 'overlay' ? SEQ : BLUES;
+    color = stepExpr(m, br, pal);
+    const fmt = v => m === 'overlay' ? v.toFixed(1) : v.toFixed(3);
+    legend = (m === 'overlay' ? 'Overlay score (1-10), quintiles: ' : 'Cosine similarity to independent-shop hexes, quintiles: ') +
+      pal.map((c, i) => `<span><span class="sw" style="background:${c}"></span>${i === 0 ? '< ' + fmt(br[0]) : i === 4 ? '≥ ' + fmt(br[3]) : fmt(br[i - 1]) + '-' + fmt(br[i])}</span>`).join('');
+  } else if (m === 'agreement') {
+    color = ['match', ['get', 'agreement'], ...Object.entries(COLORS).flat(), '#ccc'];
+    legend = Object.entries(COLORS).map(([k, c]) => `<span><span class="sw" style="background:${c}"></span>${k}</span>`).join('');
+  } else {
+    color = stepExpr('n_indep', [1, 2, 4, 8], ['#eeeeea', '#c7e9c0', '#74c476', '#31a354', '#006d2c']);
+    legend = 'Independent coffee shops per hex (Overture): ' + ['0', '1', '2-3', '4-7', '8+'].map((t, i) =>
+      `<span><span class="sw" style="background:${['#eeeeea','#c7e9c0','#74c476','#31a354','#006d2c'][i]}"></span>${t}</span>`).join('');
+  }
+  map.setPaintProperty('hex-fill', 'fill-color', color);
+  document.getElementById('legend').innerHTML = legend;
+}
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmtUSD = v => v == null ? 'n/a' : '$' + Math.round(v).toLocaleString();
+
+map.on('load', async () => {
+  hexes = await (await fetch('data/hexes.geojson')).json();
+  map.addSource('hex', { type: 'geojson', data: hexes });
+  const firstSymbol = (map.getStyle().layers.find(l => l.type === 'symbol') || {}).id;
+  map.addLayer({ id: 'hex-fill', type: 'fill', source: 'hex', paint: { 'fill-color': '#ccc', 'fill-opacity': 0.72 } }, firstSymbol);
+  map.addLayer({ id: 'hex-line', type: 'line', source: 'hex', paint: { 'line-color': '#ffffff', 'line-width': 0.4, 'line-opacity': 0.7 } }, firstSymbol);
+  setMode('overlay');
+  map.fitBounds([[-95.96, 29.5], [-94.91, 30.17]], { padding: 12, duration: 0 });
+  map.on('mousemove', 'hex-fill', () => map.getCanvas().style.cursor = 'pointer');
+  map.on('mouseleave', 'hex-fill', () => map.getCanvas().style.cursor = '');
+  map.on('click', 'hex-fill', e => {
+    const p = e.features[0].properties;
+    new maplibregl.Popup({ maxWidth: '280px' }).setLngLat(e.lngLat).setHTML(`<div class="tip"><b>${esc(p.h3)}</b><br>
+      Overlay ${(+p.overlay).toFixed(2)} (pct ${(p.overlay_pct * 100).toFixed(0)})${p.overlay_masked === true || p.overlay_masked === 'true' ? ', masked' : ''}<br>
+      Embedding similarity ${(+p.emb).toFixed(3)} (pct ${(p.emb_pct * 100).toFixed(0)})<br>
+      Agreement: ${esc(p.agreement)}<br>
+      Residents ${Math.round(p.pop).toLocaleString()}, aged 25-34 ${p.share_25_34 == null ? 'n/a' : (p.share_25_34 * 100).toFixed(0) + '%'}<br>
+      Median household income ≈ ${fmtUSD(p.med_hh_income)}<br>
+      Coffee shops: ${p.n_indep} independent, ${p.n_chain} chain; ${p.n_shops_ring1} incl. neighbours</div>`).addTo(map);
+  });
+});
+
+(async () => {
+  const R = await (await fetch('data/results.json')).json();
+  const pm = R.validation.per_method;
+  const names = { overlay: 'Overlay (expert weights)', overlay_demand_only: 'Overlay, demand only (no competition term)',
+    embeddings_esri: 'Embeddings, Esri Find Similar tool', embeddings_numpy: 'Embeddings, numpy cosine (open fallback)', random: 'Random baseline (2,000 orderings)' };
+  const cell = d => `${d.mean.toFixed(3)} <span class="note">(${d.min.toFixed(2)}-${d.max.toFixed(2)})</span>`;
+  document.getElementById('valtable').innerHTML = '<tr><th>Method</th><th>AUC</th><th>P@k</th><th>P@10</th></tr>' +
+    Object.entries(pm).map(([k, d]) => `<tr><td>${names[k] || k}</td><td>${cell(d.auc)}</td><td>${cell(d.p_at_k)}</td><td>${cell(d.p_at_10)}</td></tr>`).join('');
+  const s = R.summary, a = s.method_agreement, e = s.esri_vs_numpy;
+  document.getElementById('stats').innerHTML = [
+    [a.top10_jaccard.toFixed(3), `Jaccard of the two methods' top 10% (${a.top10_both} of ${a.top10_size} hexes shared)`],
+    [a.spearman_unmasked.toFixed(3), 'Spearman between methods on unmasked hexes'],
+    [e.spearman.toFixed(4), `Esri tool vs numpy rank correlation (max |diff| ${e.max_abs_diff.toExponential(1)})`],
+    [s.n_query_hexes, 'hexes with an independent shop (embedding query)']
+  ].map(([v, t]) => `<div class="stat"><b>${v}</b><span>${t}</span></div>`).join('');
+
+  const runs = await (await fetch('data/runs.json')).json();
+  document.getElementById('runs').innerHTML = runs.map((r, i) => {
+    const steps = r.steps.filter(x => x.kind !== 'report').map(x => x.kind === 'delegate'
+      ? `<li>manager → <b>${esc(x.agent)}</b> agent (${esc(x.model)}): ${esc(x.text)}</li>`
+      : `<li>${esc(x.agent)} agent calls <code>${esc(x.tool)}(${esc(JSON.stringify(x.input))})</code>${x.error ? ' (error)' : ''}</li>`).join('');
+    const ans = DOMPurify.sanitize(marked.parse(r.answer));
+    return `<details ${i === 0 ? 'open' : ''}><summary>${i + 1}. ${esc(r.question)}
+      <small> · ${r.n_api_calls} model calls, ${r.n_mcp_tool_calls} tool calls, ${r.seconds} s, $${r.cost_usd.toFixed(3)}</small></summary>
+      <ol class="steps">${steps}</ol><div class="answer">${ans}</div>
+      <p class="note">Run ${esc(r.run_at)} UTC. Full JSON transcript: <code>results/agent_runs/${esc(r.label)}.json</code></p></details>`;
+  }).join('');
+})();
+</script>
+</body>
+</html>

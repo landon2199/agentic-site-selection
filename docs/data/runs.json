@@ -1,0 +1,401 @@
+[
+ {
+  "label": "run_01",
+  "question": "Where in Houston should an independent coffee shop open next? Give me the top 5 areas and why.",
+  "answer": "**1. Direct answer**\nThe data supports a rough shortlist of areas to investigate, not confirmed sites. The overlay method's strongest signal is a northeast cluster near (-95.2, 29.95). The two methods disagree completely, and validation shows only moderate predictive power.\n\n**2. Ranked sites** (each hex is about 5 km\u00b2)\n1. **87446c38effffff** (-95.21, 29.95), score 9.03. It has the top score for young adults aged 25\u201334 (10) and for density (9.6), and income is about $130k. It has no shops of its own and 7 in the hex plus its neighbours. It is also the hottest Gi* hot spot (z 2.95, p 0.003).\n2. **87446cb9affffff** (-95.37, 29.59), score 8.43. Competition is low: 1 chain and 4 shops in the surrounding ring.\n3. **87446c381ffffff** (-95.21, 29.93), score 8.40. Age 25\u201334 sub-score is 10. It has 3 chains, no independents, and 8 shops in the ring.\n4. **87446c265ffffff** (-95.54, 30.06), score 8.36. Age 25\u201334 sub-score is 10 and income is about $130k. It has no shops of its own and 12 in the ring.\n5. **87446c39dffffff** (-95.19, 29.96), score 8.36. Density sub-score is 10 and income is about $157k. The 25\u201334 share is only 0.139, and the hex has no shops of its own.\n\nRanks 1, 3 and 5 sit in the same northeast cluster.\n\n**3. Method agreement**\nThe methods do not agree. The two top-10 lists share no hexes. Top-10% Jaccard overlap is 0.023 (4 of 88 hexes), and Spearman correlation is 0.53 overall but 0.035 on unmasked hexes. The overlay favours affluent, young, low-competition hexes. The embeddings favour dense, mid-income ($52k\u2013$99k), competitive hexes with 5\u201332 shops in the ring. The closest crossover is 87446c275ffffff (-95.47, 30.06), which is 3rd on similarity (0.9255) with an overlay score of 7.52. The top 5 above uses the overlay ranking only.\n\n**Confidence: low**\nThe methods contradict each other, and validation shows only moderate skill.\n\n- **Validation vs random:** Across 5 spatial blocks (880 hexes, 253 with an independent shop), overlay AUC was 0.708 (range 0.55\u20130.81) and embedding AUC was 0.743 (range 0.53\u20130.89), against 0.50 for random. P@10 was 0.40 for overlay (range 0.1\u20131.0) and 0.58 for embeddings, against 0.286 for random. Neither method worked in every block.\n- **What validation measures:** It tests resemblance to existing independent-shop locations, not whether those shops succeed.\n- **Embeddings:** They scored somewhat better than the overlay, yet they did not pick the overlay's sites. The ESRI and numpy results are identical, so they are not independent confirmation. The Esri embeddings are also a beta dataset.\n- **Missing data:** There are no sales, rent, foot-traffic or parcel data. Hexes of about 5 km\u00b2 are coarse for a coffee shop's catchment.\n- **Overture completeness:** Zero-shop hexes may have shops that are missing from the data.\n- **Hot-spot test:** The Gi* test has no multiple-testing correction.\n- **Field checks:**\n  - Whether low-competition, high-income hexes (especially ranks 4 and 5) simply lack demand.\n  - Actual shop counts.\n  - Rents.\n  - Foot traffic.\n  - Specific street-level locations.",
+  "cost_usd": 0.1101,
+  "tokens": {
+   "input": 22,
+   "output": 6653,
+   "cache_read": 3749,
+   "cache_write": 24739
+  },
+  "seconds": 44.0,
+  "n_api_calls": 7,
+  "n_mcp_tool_calls": 4,
+  "run_at": "2026-10-22T20:31:01+00:00",
+  "steps": [
+   {
+    "kind": "delegate",
+    "agent": "analysis",
+    "model": "claude-sonnet-5-5",
+    "text": "For Harris County (Houston) TX, produce the top 5 hexes for a new independent coffee shop using (1) overlay suitability ranking and (2) embedding similarity to existing coffee shop hexes (find_similar). Report top 10 of each with scores, hex ids, and key drivers, and the overlap/agreement between the two methods. Also run hot_spots/hex_profile as needed to describe the final top 5 hexes (demographics, competition, amenities)."
+   },
+   {
+    "kind": "delegate",
+    "agent": "validation",
+    "model": "claude-haiku-5-5",
+    "text": "Run validation: report how well each method (overlay suitability and embedding similarity) recovered held-out coffee shops, with all metrics and numbers, and any caveats."
+   },
+   {
+    "kind": "tool",
+    "agent": "validation",
+    "tool": "validate",
+    "input": {
+     "method": "all"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "validation",
+    "text": "**Validation results (5 spatial blocks, 880 hexes, 253 positive hexes)**\n\n| Method | AUC mean (min\u2013max) | P@k mean (min\u2013max) | P@10 mean (min\u2013max) |\n|---|---|---|---|\n| Overlay | 0.708 (0.550\u20130.810) | 0.427 (0.273\u20130.703) | 0.400 (0.100\u20131.000) |\n| Overlay, demand only | 0.707 (0.549\u20130.812) | 0.429 (0.273\u20130.683) | 0.400 (0.100\u20131.000) |\n| Embeddings (numpy) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Embeddings (ESRI) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Random | 0.500 (0.499\u20130.502) | 0.285 (0.127\u20130.534) | 0.286 (0.127\u20130.537) |\n\n- **Weakest blocks:** Overlay, block 1 (AUC 0.550). Embeddings, block 0 (AUC 0.528).\n- **Method agreement:** top-10% Jaccard 0.023 (4 shared of 88). Spearman 0.532 across all hexes, 0.035 on unmasked hexes.\n- **Checks:** All methods beat random on mean AUC and P@k. The \"every block useful\" check is a warning for all four methods.\n\n**Caveats**\n- Positives are hexes that already have an independent shop. This measures similarity to existing shop locations, not profitability or survival.\n- Only 5 blocks, so the min\u2013max ranges are wide. The dense urban core block behaves differently.\n- Within a held-out block, the competition criterion is nearly constant because its shops are hidden. Overlay and overlay-demand-only therefore score almost identically.\n- The ESRI and numpy embedding results are identical, so they appear to be the same computation."
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "overlay_suitability",
+    "input": {
+     "top_n": 10
+    },
+    "error": false
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "find_similar",
+    "input": {
+     "top_n": 10
+    },
+    "error": false
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "hot_spots",
+    "input": {
+     "field": "overlay",
+     "top_n": 5
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "analysis",
+    "text": "## Results for Harris County, TX: new independent coffee shop\n\n**Engines:** The overlay used default weights of 0.30 density, 0.25 age 25\u201334, 0.20 income and 0.25 competition. Similarity used `precomputed_esri` (Esri embeddings, 253 query hexes). I did not call `hex_profile`, because the ranking outputs already contained each hex's demographics and competition counts. The profiles give no amenity data beyond shop counts.\n\n### Method 1: Overlay top 10 (score, 1\u201310)\n| # | Hex | Lon, Lat | Score | Key drivers |\n|---|---|---|---|---|\n| 1 | 87446c38effffff | -95.2104, 29.9502 | 9.03 | Age 25\u201334 sub-score 10.0, density 9.6; income $130,054; 0 shops in hex, 7 in hex + neighbours |\n| 2 | 87446cb9affffff | -95.3659, 29.5941 | 8.43 | Competition 8.97; 1 chain; 4 shops in ring |\n| 3 | 87446c381ffffff | -95.2144, 29.9271 | 8.4 | Age 25\u201334 10.0; 3 chains; 8 shops in ring |\n| 4 | 87446c265ffffff | -95.542, 30.0594 | 8.36 | Age 25\u201334 10.0; income $129,614; 12 shops in ring |\n| 5 | 87446c39dffffff | -95.1856, 29.9583 | 8.36 | Density 10.0, income $157,311; age 25\u201334 only 0.139 (sub-score 4.97) |\n| 6 | 87446c398ffffff | -95.1609, 29.9664 | 8.26 | Income $149,666; 1 chain |\n| 7 | 87446c392ffffff | -95.0988, 29.9214 | 8.22 | Competition 9.49; 2 shops in ring |\n| 8 | 87446c140ffffff | -95.2504, 29.5886 | 8.2 | Population 7,595; 0 shops in hex |\n| 9 | 87446dc02ffffff | -95.8071, 30.0157 | 8.19 | 0 shops in ring; nearest shop 5.25 km |\n| 10 | 87446c141ffffff | -95.2711, 29.6036 | 8.17 | Income $94,583; 2 shops in ring |\n\n### Method 2: Embedding similarity top 10 (excluding hexes that already have an independent)\n| # | Hex | Lon, Lat | Similarity | Overlay score |\n|---|---|---|---|---|\n| 1 | 87446ddb0ffffff | -95.6483, 29.8498 | 0.9334 | 6.75 |\n| 2 | 87446c15affffff | -95.193, 29.6511 | 0.9283 | 6.38 |\n| 3 | 87446c275ffffff | -95.4715, 30.0608 | 0.9255 | 7.52 |\n| 4 | 87446c35affffff | -95.4548, 30.0227 | 0.9229 | 6.61 |\n| 5 | 87446c361ffffff | -95.566, 29.9207 | 0.9213 | 6.89 |\n| 6 | 87446ca01ffffff | -95.5891, 29.6511 | 0.9208 | 6.71 |\n| 7 | 87446c10bffffff | -95.1392, 29.5599 | 0.9178 | 6.33 |\n| 8 | 87446c3abffffff | -95.2599 , 29.934 | 0.9174 | 7.25 |\n| 9 | 87446ca56ffffff | -95.6226, 29.7273 | 0.9173 | 5.5 |\n| 10 | 87446c22bffffff | -95.4051, 30.0389 | 0.9149 | 6.97 |\n\nThese hexes are dense (1,425\u20133,721 per km\u00b2) and mid-income ($52,228\u2013$99,217). Their competition is heavy: 5\u201332 shops in the ring.\n\n### Agreement\n- **The two top-10 lists share no hexes.** Overlay rewards high income, young adults and few shops. Similarity rewards hexes that look like existing independent-shop areas, which are denser, busier and more competitive.\n- The overlay winners have embedding percentiles of only 43.4\u201382.8. The similarity picks have overlay scores of 5.5\u20137.52.\n- The closest crossover is 87446c275ffffff, which is 3rd on similarity (0.9255) and has an overlay score of 7.52.\n\n### Hot spots (overlay Gi*)\n- 87446c38effffff is the hottest hex (z 2.95, p 0.0032).\n- 87446dc11ffffff is next (z 2.65).\n- Overall, 67 hexes are hot and 140 are cold at 95%.\n\n### Recommended final top 5\nThese are the overlay top 5, because no hex appears in both lists. Hex 87446c38effffff is the strongest, since it ranks first on overlay and is also a statistically significant hot spot.\n1. 87446c38effffff\n2. 87446cb9affffff\n3. 87446c381ffffff\n4. 87446c265ffffff\n5. 87446c39dffffff\n\n- **Zero-shop hexes:** Hexes 1, 4 and 5 have no coffee shops of their own.\n- **Chain competition:** Hex 3 has 3 chains and no independents. Hex 2 has 1 chain.\n- **Demand gaps:** Hexes 4 and 5 may reflect gaps in demand rather than in supply.\n\n### Checks\nAll checks passed: weights sum to 1, scores in range, rank stability, all 880 hexes scored, the Esri vs numpy comparison, and the Gi* check against arcpy. There were no warn or fail results.\n\n### Caveats\n- The data has no sales figures, so a hex that looks like existing shops is not necessarily profitable.\n- Hexes are about 5.2 km\u00b2, which is coarse for a coffee shop's catchment.\n- Overture shop data can be incomplete.\n- The Esri embeddings are a beta dataset.\n- The Gi* test has no multiple-testing correction."
+   }
+  ],
+  "transcript": "https://github.com/landon2199/agentic-site-selection/blob/main/results/agent_runs/run_01.json"
+ },
+ {
+  "label": "run_02",
+  "question": "I'm looking at a storefront at 2700 White Oak Dr, Houston, TX 77007. Is that area a good bet for a new independent coffee shop?",
+  "answer": "**1. Direct answer**\nThe data cannot say whether this is a good bet. It shows very strong demand and some of the heaviest competition in the county. It does not show the area is untapped. Viability of this storefront depends on rent, sales and foot traffic, none of which this data covers.\n\n**2. Ranked sites**\nOnly one site was assessed. It is not a ranking.\n- **Hex 87446c326ffffff** (about -95.379, 29.786; the address geocodes to -95.388, 29.782). It has 14,388 residents, a density of 2,488 per km\u00b2, 22% aged 25\u201334 and a median household income of about $149k. It also has 11 coffee shops (9 independents, 2 chains: Barnaby's Cafe and Starbucks). The hex plus its 6 neighbours hold 85 shops, which gives the lowest competition sub-score, 1.0. The nearest shop is 0.55 km from the hex centre.\n\n**3. Method agreement**\nThe methods disagree here. The overlay score is 7.57/10 (93.4th percentile, top 10%). The embedding similarity is 0.87 (77.8th percentile, outside the top 10%). The hex is flagged \"overlay only\". Across the county the two methods barely overlap in their top 10%: Jaccard 0.023, with 4 of 88 hexes shared. A high overlay score here partly reflects that shops cluster where demand is high.\n\n**Confidence: low**\nThe data supports \"strong demand, intense competition\" but cannot settle the question you asked.\n\n- **Validation:** Both methods beat random on mean AUC (overlay 0.71, embeddings 0.74, random 0.50). Mean P@10 was 0.40 for overlay and 0.58 for embeddings, against about 0.29 for random. Results varied a lot across the 5 spatial blocks (880 hexes, 253 with an independent shop). The weakest block AUC was 0.55 for overlay and 0.53 for embeddings, and all methods failed the \"every block useful\" check. The dense urban core behaves differently from the rest. Validation only tests whether a method finds hexes that already have a shop, not profitability or survival.\n- **Overlay vs demand-only:** They score almost the same, so the competition criterion adds little in validation. The two embedding engines give identical results, so they are effectively one method.\n- **Data limits:** There is no sales, rent, lease, foot-traffic or parcel data. Hexes cover about 5 km\u00b2, so this describes the neighbourhood, not the storefront. The address position is interpolated and could be off by tens of metres. Embeddings are beta. Overture Places may miss recent openings and closures. Exact ranks and cutoffs were not obtained, only percentiles. The Gi* hot-spot z of 1.76 is below the 1.96 needed for 95% significance.\n- **For a field visit:** Check how the 9 independents differ in concept and whether they would compete directly with you. Check whether they are busy, and whether any have closed or opened recently. Check the rent, and the foot traffic and parking at the storefront itself.",
+  "cost_usd": 0.0663,
+  "tokens": {
+   "input": 30,
+   "output": 4929,
+   "cache_read": 6900,
+   "cache_write": 16090
+  },
+  "seconds": 40.7,
+  "n_api_calls": 10,
+  "n_mcp_tool_calls": 3,
+  "run_at": "2026-10-22T20:31:48+00:00",
+  "steps": [
+   {
+    "kind": "delegate",
+    "agent": "geocode",
+    "model": "claude-haiku-5-5",
+    "text": "Geocode the address \"2700 White Oak Dr, Houston, TX 77007\" and return the hex id (and coordinates) containing it."
+   },
+   {
+    "kind": "delegate",
+    "agent": "validation",
+    "model": "claude-haiku-5-5",
+    "text": "Run validation once: report how well each method (overlay suitability and embedding similarity) recovered held-out coffee shops in Harris County, with all metrics and caveats."
+   },
+   {
+    "kind": "tool",
+    "agent": "validation",
+    "tool": "validate",
+    "input": {
+     "method": "all"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "validation",
+    "text": "**Validation (5 spatial blocks, 880 hexes, 253 positive hexes)**\n\n| Method | Mean AUC (min\u2013max) | Mean P@k (min\u2013max) | Mean P@10 (min\u2013max) |\n|---|---|---|---|\n| Overlay | 0.708 (0.55\u20130.81) | 0.427 (0.273\u20130.703) | 0.40 (0.1\u20131.0) |\n| Overlay, demand only | 0.707 (0.549\u20130.812) | 0.429 (0.273\u20130.683) | 0.40 (0.1\u20131.0) |\n| Embeddings (numpy) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.58 (0.4\u20130.8) |\n| Embeddings (ESRI) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.58 (0.4\u20130.8) |\n| Random | 0.50 (0.499\u20130.502) | 0.285 (0.127\u20130.534) | 0.286 (0.127\u20130.537) |\n\n- **Weakest block:** Overlay and overlay-demand-only are weakest in block 1 (AUC 0.55). Embeddings are weakest in block 0 (AUC 0.528).\n- **Method agreement:** Top-10% Jaccard is 0.023 (4 shared out of 88). Spearman is 0.532 overall and 0.035 on unmasked hexes.\n- **Checks:** All methods beat random on mean AUC. All fail the \"every block useful\" check (warn), because the weakest block AUC is near 0.5 for each method.\n\n**Caveats**\n- Positives mean a hex already has an independent shop. This measures similarity to existing shop locations, not profitability or survival.\n- Only 5 blocks, so the min\u2013max ranges are wide. The tool notes one block (the dense urban core) behaves differently.\n- Inside a held-out block the competition criterion is nearly constant, so overlay and demand-only score almost the same.\n- The ESRI and numpy embedding results are identical, so they are effectively one method here."
+   },
+   {
+    "kind": "tool",
+    "agent": "geocode",
+    "tool": "geocode",
+    "input": {
+     "address": "2700 White Oak Dr, Houston, TX 77007"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "geocode",
+    "text": "Matched: 2700 WHITE OAK DR, HOUSTON, TX 77007\n- Coordinates: lon -95.387745, lat 29.781683\n- H3 hex (r7): 87446c326ffffff\n- In Harris County study area: yes\n\nChecks: address matched (pass), in study area (pass). Caveat: the position is interpolated from the address range, so it can be off by tens of metres."
+   },
+   {
+    "kind": "delegate",
+    "agent": "analysis",
+    "model": "claude-sonnet-5-5",
+    "text": "For H3 hex 87446c326ffffff (Harris County), report its overlay suitability score and rank (of all hexes), its embedding similarity score and rank, whether the two methods agree for this hex, and key profile features (demand, competition, existing independent shop count, any masking). Also give the top-10% cutoffs for context."
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "hex_profile",
+    "input": {
+     "h3_id": "87446c326ffffff"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "analysis",
+    "text": "**Hex 87446c326ffffff** (lon -95.3791, lat 29.786, Harris County)\n\n**Overlay suitability (method 1)**\n- The score is **7.57** out of 10, at the **93.4th percentile**.\n- The hex is not masked. It has 14,388 residents and is 100% inside the county.\n- Sub-scores:\n\n| Criterion | Sub-score | Hex value |\n|---|---|---|\n| Population density | 9.77 | 2,488 per km\u00b2 |\n| Share aged 25\u201334 | 9.91 | 0.22 |\n| Median household income | 9.55 | $148,715 |\n| Shops in the ring (competition) | 1.0 | 85 |\n\n- The Gi* hot-spot z is 1.76. That is positive but below the 1.96 needed for 95% significance.\n\n**Embedding similarity (method 2)**\n- The score is **0.8705**, at the **77.8th percentile**.\n- I did not run `find_similar`, so I don't know which engine produced this score. The profile labels it `emb_esri`.\n\n**Agreement**\n- The two methods **disagree** for this hex. The profile class is **\"overlay only\"**: it is in the overlay top 10% but not the embedding top 10%.\n- Demand is very strong, but the hex is already crowded. The embedding sits closer to the middle of the range, at the 77.8th percentile.\n\n**Competition and existing shops**\n- The hex holds 11 coffee shops: **9 independents** and 2 chains.\n- The ring (hex plus 6 neighbours) holds 85 shops. That gives the lowest possible competition sub-score of 1.0.\n- The nearest shop is 0.55 km from the hex centre.\n- The independents are A 2nd Cup, Active Passion Coffee & Cafe, Antidote Coffee, El Gato Coffeehouse, Latin World Cafe, New Heights Coffee Roasters, Rivas Coffee Cocktails & Kitchen, The Coffee Garden and Uncle Bean's Coffee.\n- The chains are Barnaby's Cafe and Starbucks.\n- Because the hex already has independents, it would not count as an untapped look-alike under `find_similar` with `exclude_existing`.\n\n**Rank and top-10% cutoffs**\n- I can't give exact ranks or cutoff values. The profile tool returns percentiles only, and I did not run a ranked list.\n- Percentiles are the best context I have. The overlay percentile (93.4) is above the 90th, so the hex is in the overlay top 10%. The embedding percentile (77.8) is below the 90th, so it is outside the embedding top 10%.\n- I can run `overlay_suitability` and `find_similar` with top_n up to 50 to look for the hex and estimate the cutoffs. Tell me if you want that.\n\n**Checks**\n- All three checks passed: population present, mostly in study area, and not masked.\n- No warn or fail results.\n\n**Caveats**\n- There is no sales data, so a high score does not mean the hex would be profitable.\n- Hexes cover about 5.2 km\u00b2, which is coarse for a coffee shop catchment.\n- Overture Places may be missing some openings, closures or independents.\n- Hex income is a population-weighted mean of tract medians, not a true median."
+   }
+  ],
+  "transcript": "https://github.com/landon2199/agentic-site-selection/blob/main/results/agent_runs/run_02.json"
+ },
+ {
+  "label": "run_03",
+  "question": "If I weight young professionals (ages 25-34) most heavily and care less about competition, which areas rank highest, and does the embedding method agree?",
+  "answer": "**1. Direct answer**\nWith young professionals weighted most heavily (40%) and competition at 10%, the overlay ranks dense, affluent inner-loop Houston hexes highest. The embedding method does not agree: the two top-10 lists share no hexes. Neither method shows profitability, only demographic similarity or promise.\n\n**2. Ranked sites (overlay top picks)**\n1. **87446c38effffff**, about (-95.21, 29.95). Score 9.22. The 25\u201334 share is 0.234, income is $130k, and there are only 7 shops in the hex and its neighbours. It is the only top pick with real room on competition.\n2. **87446c324ffffff**, about (-95.40, 29.78). Score 9.10. The 25\u201334 share is 0.319 (the highest in the list) and income is $163k. It has 82 shops nearby.\n3. **87446c320ffffff**, about (-95.40, 29.80). Score 9.10. The 25\u201334 share is 0.247 and income is $165k. It has 62 shops nearby.\n4. **87446ca8bffffff**, about (-95.43, 29.77). Score 9.01. Income is $182k, the highest in the list. It has 59 shops nearby.\n5. **87446c265ffffff**, about (-95.54, 30.06). Score 8.80. The 25\u201334 share is 0.229, income is $130k, and it has 12 shops nearby. It has no shop in the hex itself.\n\nHexes #2\u2013#8 and #10 are crowded inner-loop areas with 35\u201399 nearby shops and 5\u201325 independents. They rank high because competition carries little weight. Only #1 and #9 have no shop in the hex itself. Only those two would remain if hexes with existing independents were excluded, and that option was not run.\n\n**3. Method agreement**\nNo.\n- Top-10 and top-20 overlap are both 0 hexes.\n- Top-10% Jaccard is 0.023 (4 shared of 88).\n- Spearman is 0.53 across all hexes but 0.035 on unmasked hexes.\n- The overlay's top picks sit at embedding percentiles of only about 46\u201387.\n- The embeddings favour mid-income suburban hexes (25\u201334 share 0.13\u20130.20, income about $52k\u2013$99k) that resemble existing independent locations. Their overlay scores are 5.5\u20137.5.\n\n**Confidence: low**\nThe two methods point to different places, and both validated only moderately.\n\n- **Validation (5 spatial blocks, held-out independent shops):**\n\n| Method | Mean AUC | Mean P@10 |\n|---|---|---|\n| Overlay | 0.708 | 0.40 |\n| Embeddings | 0.743 | 0.58 |\n| Random | 0.500 | 0.286 |\n\n  Both beat random on average, but each was flagged weak in at least one block (weakest AUC 0.53\u20130.55).\n- The ESRI and numpy embedding runs gave identical results, so they count as one method.\n- Validation says little about the competition weight, because competition is nearly constant within held-out blocks.\n- There is no sales, rent, foot-traffic or storefront data. Validation measures where independents exist, not whether they succeed.\n- Hexes are about 5 km\u00b2, which is coarse for a coffee-shop catchment.\n- The embeddings are a beta dataset and may overlap with the demographic inputs. Overture shop data may be incomplete. The overlay weights are expert judgement.\n- **For a field visit:** check actual foot traffic and young-professional presence, nearby independents, lease availability and rent. In #1 and #9, check whether low shop counts reflect missing demand.",
+  "cost_usd": 0.1107,
+  "tokens": {
+   "input": 22,
+   "output": 5948,
+   "cache_read": 3782,
+   "cache_write": 27982
+  },
+  "seconds": 41.3,
+  "n_api_calls": 7,
+  "n_mcp_tool_calls": 3,
+  "run_at": "2026-10-22T20:32:32+00:00",
+  "steps": [
+   {
+    "kind": "delegate",
+    "agent": "analysis",
+    "model": "claude-sonnet-5-5",
+    "text": "Run overlay suitability for coffee-shop sites in Harris County, TX with weights: young professionals (ages 25-34) weighted most heavily (highest weight), competition (existing coffee shops) weighted low, other factors moderate/default. Report the top 10 hexes with ids, scores, and key factor values. Then run embedding similarity (find_similar) ranking and report the top 10, plus the agreement between the two methods (overlap count in top 10/top 20, rank correlation if available). Note any caveats."
+   },
+   {
+    "kind": "delegate",
+    "agent": "validation",
+    "model": "claude-haiku-5-5",
+    "text": "Validate how well each method (overlay suitability and embedding similarity) recovered held-out coffee shops. Report all metrics returned with numbers, for each method, and any caveats."
+   },
+   {
+    "kind": "tool",
+    "agent": "validation",
+    "tool": "validate",
+    "input": {
+     "method": "all"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "validation",
+    "text": "**Validation results (5 spatial blocks, 880 hexes, 253 positive hexes)**\n\n| Method | AUC mean (min\u2013max) | P@k mean (min\u2013max) | P@10 mean (min\u2013max) |\n|---|---|---|---|\n| Overlay | 0.708 (0.550\u20130.810) | 0.427 (0.273\u20130.703) | 0.400 (0.100\u20131.000) |\n| Overlay, demand only | 0.707 (0.549\u20130.812) | 0.429 (0.273\u20130.683) | 0.400 (0.100\u20131.000) |\n| Embeddings (numpy) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Embeddings (ESRI) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Random | 0.500 (0.499\u20130.502) | 0.285 (0.127\u20130.534) | 0.286 (0.127\u20130.537) |\n\n- **Weakest blocks:** Overlay and overlay-demand-only are weakest in block 1 (AUC 0.55 and 0.549). Both embedding variants are weakest in block 0 (AUC 0.528).\n- **Method agreement:** Top-10% Jaccard is 0.023 (4 shared of 88 top hexes). Spearman is 0.532 across all hexes and 0.035 on unmasked hexes.\n\n**Caveats**\n- The ESRI and numpy embedding results are identical, so they count as one method, not two independent confirmations.\n- Positives are hexes that already have an independent shop. This measures similarity to existing shop locations, not profitability or survival.\n- With only 5 blocks, the min\u2013max ranges are wide. Block 0 (the dense urban core) behaves differently.\n- Within a held-out block, the competition criterion is nearly constant because those shops are hidden. That is why overlay and demand-only score almost the same.\n- Every method beats random on mean AUC and P@k. But the per-block check flags a warning for every method: no method is clearly useful in every block (weakest AUC \u2248 0.53\u20130.55)."
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "overlay_suitability",
+    "input": {
+     "weights": {
+      "share_25_34": 0.4,
+      "n_shops_ring1": 0.1,
+      "pop_density_km2": 0.25,
+      "med_hh_income": 0.25
+     },
+     "top_n": 20
+    },
+    "error": false
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "find_similar",
+    "input": {
+     "top_n": 20
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "analysis",
+    "text": "**Harris County, TX coffee-shop siting: overlay vs. embedding similarity**\n\n**Method 1: Overlay.** The weights were 0.40 for ages 25\u201334, 0.25 for density, 0.25 for income and 0.10 for competition. 230 of 880 hexes were masked.\n\n| Rank | Hex | Lon, lat | Score | Share 25\u201334 | Income | Shops in hex + neighbours |\n|---|---|---|---|---|---|---|\n| 1 | 87446c38effffff | -95.2104, 29.9502 | 9.22 | 0.234 | $130,054 | 7 |\n| 2 | 87446c324ffffff | -95.4039, 29.7778 | 9.10 | 0.319 | $163,402 | 82 |\n| 3 | 87446c320ffffff | -95.3999, 29.8009 | 9.10 | 0.247 | $164,636 | 62 |\n| 4 | 87446ca8bffffff | -95.4286, 29.7697 | 9.01 | 0.256 | $182,168 | 59 |\n| 5 | 87446ca88ffffff | -95.4326, 29.7465 | 8.95 | 0.227 | $156,214 | 99 |\n| 6 | 87446c325ffffff | -95.4246, 29.7928 | 8.92 | 0.292 | $149,904 | 50 |\n| 7 | 87446c326ffffff | -95.3791, 29.786 | 8.89 | 0.22 | $148,715 | 85 |\n| 8 | 87446c321ffffff | -95.4206, 29.8159 | 8.89 | 0.218 | $166,649 | 35 |\n| 9 | 87446c265ffffff | -95.542, 30.0594 | 8.80 | 0.229 | $129,614 | 12 |\n| 10 | 87446ca81ffffff | -95.4159, 29.7084 | 8.70 | 0.211 | $147,232 | 98 |\n\n- Hexes 2\u20138 and 10 have a competition sub-score of 1.0, the minimum. They are dense, high-income, young areas that already have many shops.\n- Only #1 (87446c38effffff) and #9 (87446c265ffffff) have no shop in the hex itself. Both have a competition sub-score above 6.9.\n- #1 has density 2152/km\u00b2 and a population of 12,415.\n\n**Method 2: Embedding similarity.** The engine was `precomputed_esri` (arcpy FindSimilarFeaturesUsingEmbeddings). The query was the 253 hexes with at least one independent shop. Hexes that already have an independent were excluded.\n\n| Rank | Hex | Lon, lat | Similarity | Overlay score |\n|---|---|---|---|---|\n| 1 | 87446ddb0ffffff | -95.6483, 29.8498 | 0.9334 | 6.75 |\n| 2 | 87446c15affffff | -95.193, 29.6511 | 0.9283 | 6.38 |\n| 3 | 87446c275ffffff | -95.4715, 30.0608 | 0.9255 | 7.52 |\n| 4 | 87446c35affffff | -95.4548, 30.0227 | 0.9229 | 6.61 |\n| 5 | 87446c361ffffff | -95.566, 29.9207 | 0.9213 | 6.89 |\n| 6 | 87446ca01ffffff | -95.5891, 29.6511 | 0.9208 | 6.71 |\n| 7 | 87446c10bffffff | -95.1392, 29.5599 | 0.9178 | 6.33 |\n| 8 | 87446c3abffffff | -95.2599, 29.934 | 0.9174 | 7.25 |\n| 9 | 87446ca56ffffff | -95.6226, 29.7273 | 0.9173 | 5.5 |\n| 10 | 87446c22bffffff | -95.4051, 30.0389 | 0.9149 | 6.97 |\n\n- These hexes have a share aged 25\u201334 of 0.127\u20130.198 and incomes of roughly $52k\u2013$99k.\n- All have zero independents and 0\u20134 chain shops.\n\n**Agreement**\n- The top-10 overlap is 0 hexes, and the top-20 overlap is also 0.\n- I did not compute a rank correlation between the two methods, and the tools don't return one. The only Spearman reported is 0.915, for the overlay under these weights versus the default weights.\n- The embedding top 10 have overlay scores of 5.5\u20137.52, well below the overlay top 10 (8.70\u20139.22).\n- The two methods favour different kinds of places. The overlay picks affluent, young, dense inner-loop hexes. The embeddings pick mid-income suburban hexes that resemble where independents already exist.\n- The overlay's top 20 includes the inner-loop hexes that already have 5\u201325 independents. These would be excluded by the `exclude_existing_independents` option, which I did not use.\n- Their embedding percentiles are only about 46\u201387.\n\n**Checks:** All checks passed. There were no warn or fail results.\n\n**Caveats**\n- There is no sales data. Both methods say \"looks promising\", not \"profitable\".\n- Hexes are about 5.2 km\u00b2, which is coarse for a coffee-shop catchment.\n- Overture shop data may be incomplete.\n- The weights are expert judgement, not fitted to outcomes.\n- The competition criterion rewards gaps, and a hex with no shops may also have no demand.\n- The embeddings are a beta dataset, and their inputs may overlap with the ACS fields used in the overlay.\n- Similarity is measured against a single averaged query vector."
+   }
+  ],
+  "transcript": "https://github.com/landon2199/agentic-site-selection/blob/main/results/agent_runs/run_03.json"
+ },
+ {
+  "label": "run_04",
+  "question": "Which parts of Harris County look demographically like the places where independent coffee shops already thrive, but don't have one yet?",
+  "answer": "**1. Direct answer**\nTen hexes in Harris County resemble the neighborhoods where independent coffee shops already exist but have no coffee shop of any kind. The strongest are 87446c20cffffff and 87446c0f2ffffff, because both methods rate them well. This shows demographic resemblance only. It does not show that a shop would be profitable, because there is no sales data.\n\n**2. Ranked sites** (similarity / overlay score)\n1. **87446c20cffffff** (-95.380, 30.047): 0.910 / 8.17. Strong on both methods. Young population (25\u201334 share about 20%), income $85k, only 3 shops nearby.\n2. **87446c0f2ffffff** (-94.987, 29.762): 0.912 / 7.82. Strong on both methods. 25\u201334 share about 20%, income $67k, 4 shops nearby.\n3. **87446c275ffffff** (-95.472, 30.061): 0.926 / 7.52. Appears in both methods' top 50. Income $99k.\n4. **87446c15affffff** (-95.193, 29.651): highest similarity (0.928), overlay 6.38. Income $52k, 9 shops nearby.\n5. **87446c32dffffff** (-95.462, 29.846): 0.908 / 7.36. Income $65k.\n\nThe other five (c361, c22b, c08d, c36e, caae) have similarity 0.910\u20130.921 and overlay 6.31\u20137.00. Hex caae has 23 shops in its ring, so competition there is heavy.\n\nThe ten share a profile: about 1,970 people per km\u00b2, 6.5k\u201313.7k residents, a 25\u201334 share averaging 16.5%, median income around $69k, and 1.2\u20132.9 km to the nearest shop. They are suburban or inner-ring areas, mostly north/northwest (near lat 30.0) and east/southeast.\n\n**3. Method agreement**\nThe methods agree very little. Their top-10 lists share no hexes, and their top-50 lists share 4 (8%). Top-10% overlap is 0.023 (4 of 88). The overlay favors extremes such as high income ($121k\u2013$157k) and few nearby shops. Similarity favors a typical mix of traits found where independents already are. Hexes on both lists are the most robust picks.\n\n**Confidence: low-to-medium.** Both methods beat random, but they disagree and performance varies by area.\n\n- **Validation:** Embedding AUC was 0.743 (range 0.53\u20130.89) and overlay AUC 0.708 (0.55\u20130.81), against 0.50 for random. P@10 was 0.58 for embeddings, 0.40 for overlay, and 0.286 for random. Every method got a \"warn\" on working in every block. Hit rates and lift were not returned.\n- **\"Thrive\" is unmeasured:** No sales, foot-traffic, rent, or storefront data. A hex with an independent counts as a success.\n- **Resolution:** Hexes are about 5 km\u00b2, so these are broad areas, not sites or streets.\n- **Data gaps:** The embeddings are beta and may use the same census inputs as the overlay, so the two methods may not be independent checks. Overture may miss shops, so a \"zero-shop\" hex may not be empty. 230 sparse or small hexes were excluded.\n- **Limited validation:** Only 5 spatial blocks were used, and the dense urban core behaves differently.\n- **Field visit should check:** whether a shop already exists, the commercial space and rent available, traffic and parking, and the real competition (especially in caae).",
+  "cost_usd": 0.1612,
+  "tokens": {
+   "input": 22,
+   "output": 7119,
+   "cache_read": 3776,
+   "cache_write": 43914
+  },
+  "seconds": 50.0,
+  "n_api_calls": 7,
+  "n_mcp_tool_calls": 3,
+  "run_at": "2026-10-22T20:33:25+00:00",
+  "steps": [
+   {
+    "kind": "delegate",
+    "agent": "analysis",
+    "model": "claude-sonnet-5-5",
+    "text": "For Harris County hexes (~5 km^2), use embedding similarity (find_similar) seeded on hexes that already contain thriving independent coffee shops, and overlay suitability, to identify hexes that demographically resemble those places but currently have NO coffee shop. Return the top ~10 such hexes with ids, similarity and suitability scores, and report how much the two methods agree (e.g., overlap of top-ranked lists). Also summarize key demographic traits common to these candidates."
+   },
+   {
+    "kind": "delegate",
+    "agent": "validation",
+    "model": "claude-haiku-5-5",
+    "text": "Run validate once: report how well each method (overlay suitability and embedding similarity) recovered held-out coffee shops, with all metrics (e.g., hit rates, lift, AUC) and any caveats it reports."
+   },
+   {
+    "kind": "tool",
+    "agent": "validation",
+    "tool": "validate",
+    "input": {
+     "method": "all"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "validation",
+    "text": "**Validation (5 spatial blocks, 880 hexes, 253 positive hexes)**\n\n| Method | Mean AUC (min\u2013max) | Mean P@k (min\u2013max) | Mean P@10 (min\u2013max) |\n|---|---|---|---|\n| Overlay | 0.708 (0.55\u20130.81) | 0.427 (0.273\u20130.703) | 0.40 (0.1\u20131.0) |\n| Overlay, demand only | 0.707 (0.549\u20130.812) | 0.429 (0.273\u20130.683) | 0.40 (0.1\u20131.0) |\n| Embeddings (numpy) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.58 (0.4\u20130.8) |\n| Embeddings (ESRI) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.58 (0.4\u20130.8) |\n| Random | 0.500 (0.499\u20130.502) | 0.285 (0.127\u20130.534) | 0.286 (0.127\u20130.537) |\n\n- **Weakest block:** Overlay and overlay-demand-only are weakest in block 1 (AUC 0.55). Embeddings are weakest in block 0 (AUC 0.528).\n- **Method agreement:** Top-10% Jaccard between methods is 0.023 (4 shared of 88). Spearman is 0.532 overall and 0.035 on unmasked hexes.\n- **Checks:** All methods beat random on mean AUC and P@k. Every method gets a \"warn\" on the every-block-useful check.\n- **Not returned:** Hit rates and lift were not in the output, so I haven't reported them. ESRI and numpy embeddings give identical numbers, so the ESRI tool adds no separate signal here.\n\n**Caveats from the run:**\n- Positives are hexes with an independent shop. This measures similarity to existing shop locations, not profitability or survival.\n- Only 5 blocks, so the range is wide. The dense urban core behaves differently.\n- Within a held-out block, the competition criterion is nearly constant, so overlay and demand-only score almost the same."
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "find_similar",
+    "input": {
+     "query": "independent_shops",
+     "exclude_existing": true,
+     "top_n": 50
+    },
+    "error": false
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "overlay_suitability",
+    "input": {
+     "top_n": 50,
+     "exclude_existing_independents": true
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "analysis",
+    "text": "**Engines:** find_similar used the precomputed Esri run (arcpy FindSimilarFeaturesUsingEmbeddings, 253 query hexes that hold at least one independent). overlay_suitability used default weights of 0.30/0.25/0.20/0.25. Hexes that already hold an independent were excluded in both. I then kept only hexes with 0 coffee shops of any kind, taken from the similarity ranking.\n\n**Top 10 candidates (zero shops, ranked by similarity)**\n\n| # | H3 | lon, lat | Sim | Overlay | Pop | 25\u201334 | Income | Density/km\u00b2 | Shops in hex+ring |\n|---|---|---|---|---|---|---|---|---|---|\n| 1 | 87446c15affffff | -95.193, 29.6511 | 0.9283 | 6.38 | 12,071 | 0.141 | $52,228 | 2,100 | 9 |\n| 2 | 87446c275ffffff | -95.4715, 30.0608 | 0.9255 | 7.52 | 8,653 | 0.177 | $99,217 | 1,497 | 10 |\n| 3 | 87446c361ffffff | -95.566, 29.9207 | 0.9213 | 6.89 | 13,657 | 0.127 | $84,209 | 2,445 | 7 |\n| 4 | 87446c22bffffff | -95.4051, 30.0389 | 0.9149 | 6.97 | 6,509 | 0.160 | $70,358 | 1,425 | 7 |\n| 5 | 87446c0f2ffffff | -94.9872, 29.7621 | 0.9118 | 7.82 | 12,347 | 0.198 | $66,717 | 2,143 | 4 |\n| 6 | 87446c08dffffff | -94.9666, 29.747 | 0.9112 | 7.00 | 10,558 | 0.159 | $57,723 | 1,989 | 5 |\n| 7 | 87446c36effffff | -95.562, 29.9438 | 0.9104 | 6.63 | 9,503 | 0.149 | $68,176 | 1,678 | 10 |\n| 8 | 87446caaeffffff | -95.4447, 29.6771 | 0.9100 | 6.31 | 13,502 | 0.153 | $88,978 | 2,333 | 23 |\n| 9 | 87446c20cffffff | -95.3803, 30.0471 | 0.9099 | 8.17 | 12,854 | 0.196 | $84,813 | 2,226 | 3 |\n| 10 | 87446c32dffffff | -95.4621, 29.8459 | 0.9078 | 7.36 | 9,794 | 0.186 | $64,965 | 1,826 | 7 |\n\nThe best two on both measures are 87446c20cffffff (overlay rank 11 overall, similarity 0.9099) and 87446c0f2ffffff (overlay rank 28, similarity 0.9118). Both have 3\u20134 shops in the hex and its ring, a 25\u201334 share near 0.20, and are 1.5\u20132.9 km from the nearest shop.\n\n**Agreement between the methods**\n- There is no overlap between the top-10 lists: the similarity top 10 and the overlay top 10 share no hexes.\n- The top-50 lists share only 4 hexes (8%): c20c, 0f2, 276 and 275. Of these, 276 has 3 chains, so it is not a zero-shop hex.\n- Among the zero-shop candidates, only 3 appear in both top-50 lists: c20c, 0f2 and 275.\n- The overlay's own top hexes (38e, 265, 39d) have embedding percentiles of only about 46\u201366. Those hexes have high income ($121k\u2013$157k) and a high 25\u201334 share, which makes them unlike existing independents' neighbourhoods.\n- The methods disagree mainly because the overlay rewards extremes (high income, few nearby shops). The similarity method rewards a typical mix.\n\n**Common traits of the 10 candidates**\n- Population density is moderate to high: 1,425\u20132,445 per km\u00b2, averaging about 1,970.\n- Population is large, at 6.5k\u201313.7k per hex.\n- The 25\u201334 share is 0.127\u20130.198, averaging about 0.165.\n- Median household income is middle to upper-middle: $52k\u2013$99k, with a median of about $69k.\n- Competition is moderate, with 3\u201310 shops in the ring (23 for one hex).\n- They sit 1.2\u20132.9 km from the nearest shop. All are in suburban or inner-ring areas of the county.\n\n**Checks:** All pass: all 880 hexes scored; the query hexes' median similarity percentile is 74; the Esri and numpy results match (Spearman 1.0); the weights sum to 1; scores are in range; rank stability is 1.000. There are no warn or fail results.\n\n**Caveats:** Similarity means \"demographically like existing independents\", not \"will be profitable\". There is no sales data, and the beta embeddings may use the same ACS inputs as the overlay. At about 5 km\u00b2 per hex the resolution is coarse. Overture can miss shops, so a \"zero shop\" hex may not be empty. The overlay's 230 masked hexes (under 500 residents or under 1 km\u00b2 of land) are never candidates."
+   }
+  ],
+  "transcript": "https://github.com/landon2199/agentic-site-selection/blob/main/results/agent_runs/run_04.json"
+ },
+ {
+  "label": "run_05",
+  "question": "What monthly revenue will a coffee shop at 1500 McKinney St, Houston, TX 77010 make, and which exact storefront on that block should I lease?",
+  "answer": "**1. Direct answer**\nThis data cannot give a monthly revenue figure or pick a storefront. It has no sales, rent, lease, foot-traffic or parcel data, and the smallest unit is a hex of about 5 km\u00b2. What it can say is that the address sits in a high-demand but heavily saturated area, rated mid-table by both methods.\n\n**2. Ranked sites**\nNo ranked sites, because storefronts can't be separated. The only location assessed is the hex containing the address:\n- **87446ca98ffffff** (about -95.361, 29.754), downtown/Midtown Houston. Demand is strong: 14,116 residents, 38.6% aged 25\u201334, median household income about $107k. It already has 35 coffee shops (23 independents, 12 chains, mostly Starbucks), and 126 including neighbouring hexes. The nearest shop is 0.37 km from the hex centre.\n\n**3. Method agreement**\n- Overlay: 6.9 out of 10, 74th percentile, roughly rank 170 of about 650 scored hexes (my estimate, not a returned rank). It is outside the top 50 (cutoff 7.61). Population density (9.76) and age share (10) score high, income scores 6.13, and competition scores 1.0, which pulls the total down.\n- Embeddings (Esri): similarity 0.82, 55.7th percentile, roughly rank 390 of 880 (also an estimate). The top-50 cutoff is 0.889.\n- Both put this hex mid-table, in the top 10% of neither. Across the county, though, the methods barely agree: top-10% overlap is 4 of 88 hexes (Jaccard 0.023), and the Spearman correlation among unmasked hexes is 0.035. They reward different things, so the agreement here is weak evidence.\n\n**Confidence: low.** The questions asked can't be answered from this data, and the area-level read is only modestly validated.\n\n- **Validation (5 spatial blocks, 880 hexes, 253 with shops):** Overlay mean AUC 0.708 (range 0.55\u20130.81); embeddings 0.743 (0.53\u20130.89); random 0.50. Precision at k: overlay 0.427, embeddings 0.484, random 0.285. Both beat random but only modestly, and the weakest block is near chance (0.55 and 0.53).\n- **What validation measures:** similarity to where independent shops already exist, not profitability or survival.\n- **Independence:** the Esri and numpy embedding results are identical, so they are not separate checks. The embeddings are a beta dataset and may use the same census inputs as the overlay.\n- **Data limits:** no sales data. Hexes cover about 5.2 km\u00b2, which is coarse for a coffee shop. Overture completeness for coffee shops wasn't tested. The geocode is an address-range interpolation and can be off by tens of metres.\n- **Field visit should check:**\n  - actual rents and available storefronts on the block\n  - weekday and weekend foot traffic\n  - the closest competitors' hours and queues\n  - whether the 0.37 km nearest shop is a direct competitor\n  - whether the daytime office and visitor population matches the resident profile\n\nFor revenue, use local comparable shops' figures or a broker's data rather than this analysis.",
+  "cost_usd": 0.1371,
+  "tokens": {
+   "input": 30,
+   "output": 5098,
+   "cache_read": 11458,
+   "cache_write": 39895
+  },
+  "seconds": 41.9,
+  "n_api_calls": 10,
+  "n_mcp_tool_calls": 5,
+  "run_at": "2026-10-22T20:34:10+00:00",
+  "steps": [
+   {
+    "kind": "delegate",
+    "agent": "geocode",
+    "model": "claude-haiku-5-5",
+    "text": "Geocode the address \"1500 McKinney St, Houston, TX 77010\" to its hex id (and report the coordinates/resolution if available)."
+   },
+   {
+    "kind": "delegate",
+    "agent": "validation",
+    "model": "claude-haiku-5-5",
+    "text": "Run validation once: report how well each method (overlay suitability and embedding similarity) recovered held-out coffee shops in Harris County, with all metrics and caveats."
+   },
+   {
+    "kind": "tool",
+    "agent": "validation",
+    "tool": "validate",
+    "input": {
+     "method": "all"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "validation",
+    "text": "**Validation (Harris County, 5 spatial blocks, 880 hexes, 253 positive hexes)**\n\n| Method | Mean AUC (min\u2013max) | Mean P@k (min\u2013max) | Mean P@10 (min\u2013max) |\n|---|---|---|---|\n| Overlay | 0.708 (0.550\u20130.810) | 0.427 (0.273\u20130.703) | 0.400 (0.100\u20131.000) |\n| Overlay, demand only | 0.707 (0.549\u20130.812) | 0.429 (0.273\u20130.683) | 0.400 (0.100\u20131.000) |\n| Embeddings (numpy) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Embeddings (ESRI) | 0.743 (0.528\u20130.886) | 0.484 (0.318\u20130.629) | 0.580 (0.400\u20130.800) |\n| Random | 0.500 (0.499\u20130.502) | 0.285 (0.127\u20130.534) | 0.286 (0.127\u20130.537) |\n\n- **Weakest block:** Overlay and overlay-demand-only: block 1 (AUC 0.55). Embeddings (both): block 0 (AUC 0.528).\n- **Method agreement:** Top-10% Jaccard = 0.023 (4 shared of 88). Spearman, all hexes = 0.532; Spearman, unmasked = 0.035.\n\n**Caveats**\n- Positives are hexes that already have an independent shop. This measures similarity to existing shop locations, not profitability or survival.\n- Only 5 blocks, so the min\u2013max ranges are wide. The report says one block (the dense urban core) behaves differently but does not identify which.\n- Within a held-out block, the competition criterion is nearly constant, so the two overlay variants score almost the same.\n- The ESRI and numpy embedding results are identical, so they appear to be the same implementation rather than independent checks.\n- All four method checks passed the \"beats random\" test. All four \"every block useful\" checks flagged a warning because the weakest block AUC is near 0.5."
+   },
+   {
+    "kind": "tool",
+    "agent": "geocode",
+    "tool": "geocode",
+    "input": {
+     "address": "1500 McKinney St, Houston, TX 77010"
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "geocode",
+    "text": "Matched: 1500 MCKINNEY ST, HOUSTON, TX, 77010\n\n- **H3 hex id (r7):** 87446ca98ffffff\n- **Coordinates (WGS84):** lon -95.360586, lat 29.754277\n- **In study area:** Yes (Harris County)\n- **Checks:** address matched (pass), in study area (pass)\n- **Caveat:** Address-range interpolation, so position can be off by tens of metres."
+   },
+   {
+    "kind": "delegate",
+    "agent": "analysis",
+    "model": "claude-sonnet-5-5",
+    "text": "For H3 r7 hex 87446ca98ffffff (downtown/Midtown Houston, 1500 McKinney St), report its overlay suitability score and rank among Harris County hexes, its embedding similarity score and rank, whether the two methods agree, and key demand/competition attributes behind the scores."
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "hex_profile",
+    "input": {
+     "h3_id": "87446ca98ffffff"
+    },
+    "error": false
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "overlay_suitability",
+    "input": {
+     "top_n": 50
+    },
+    "error": false
+   },
+   {
+    "kind": "tool",
+    "agent": "analysis",
+    "tool": "find_similar",
+    "input": {
+     "top_n": 50
+    },
+    "error": false
+   },
+   {
+    "kind": "report",
+    "agent": "analysis",
+    "text": "**Hex 87446ca98ffffff** (lon -95.3624, lat 29.7479) is a mid-table hex on both methods. It is in the top 10% of neither, so the methods agree only in the sense that both rate it average-to-good. Neither tool returns an exact rank for a single hex, so I give percentiles and rough ranks I worked out from them.\n\n**Overlay (method 1)**\n- The score is 6.9 out of 10, at the 74.0th percentile. It is not in the top 50, where the cutoff is 7.61.\n- Of the 880 hexes, 230 are masked, which leaves about 650 scored. At the 74th percentile that puts it at roughly rank 170. This is my estimate, not a returned rank.\n- Sub-scores:\n\n| Criterion | Sub-score |\n|---|---|\n| Population density | 9.76 |\n| Share aged 25\u201334 | 10.0 |\n| Median household income | 6.13 |\n| Competition (shops in hex and neighbours) | 1.0 |\n\n- Competition is the drag on the score. The hex and its neighbours hold 126 coffee shops.\n- The overlay hot-spot z is 1.16.\n\n**Embedding similarity (method 2)**\n- Engine: precomputed_esri (Esri geodemographic embeddings, ArcGIS Pro 3.7 run).\n- The similarity is 0.8207, at the 55.7th percentile. That is roughly rank 390 of 880, again my estimate.\n- The hex does not appear in the \"untapped look-alikes\" list. Those lists exclude any hex that already has an independent shop, and this one has 23. The top-50 cutoff is similarity 0.889.\n\n**Do the methods agree?**\n- The profile's top-10% class is \"neither\".\n- The two methods differ in what they reward. The overlay rewards demand (young, dense, affluent) and penalises competition. The embedding only asks whether the area looks like hexes that already have an independent shop.\n\n**Demand and competition**\n- Population is 14,116 (2,459 per km\u00b2).\n- 38.6% of residents are aged 25\u201334.\n- Median household income is $106,983.\n- The hex has 35 coffee shops: 23 independents and 12 chains. Most of the chains are Starbucks. The nearest shop is 0.37 km from the hex centre.\n- It is a strong demand hex that is already heavily served, so it is saturated rather than untapped.\n\n**Checks**\n- No warn or fail results.\n- Profile checks (population present, inside the county, not masked): pass.\n- Overlay checks (weights sum to 1, scores in range, rank stability vs default weights): pass.\n- Embedding checks (all hexes scored, query hexes rank high, Esri vs numpy fallback): pass.\n\n**Caveats**\n- There is no sales data, and hexes cover about 5.2 km\u00b2, which is coarse for a coffee shop.\n- The embeddings are a beta dataset and may use the same ACS inputs as the overlay, so the two methods are not fully independent."
+   }
+  ],
+  "transcript": "https://github.com/landon2199/agentic-site-selection/blob/main/results/agent_runs/run_05.json"
+ }
+]
