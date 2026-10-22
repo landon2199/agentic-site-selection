@@ -103,6 +103,7 @@ const map = new maplibregl.Map({
   style: 'https://tiles.openfreemap.org/styles/positron'
 });
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+new ResizeObserver(() => map.resize()).observe(document.getElementById('map'));
 
 function quantiles(vals, n) {
   const s = vals.filter(v => v != null && !isNaN(v)).sort((a, b) => a - b);
