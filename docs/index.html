@@ -192,7 +192,7 @@ map.on('load', async () => {
       : `<li>${esc(x.agent)} agent calls <code>${esc(x.tool)}(${esc(JSON.stringify(x.input))})</code>${x.error ? ' (error)' : ''}</li>`).join('');
     const ans = DOMPurify.sanitize(marked.parse(r.answer));
     return `<details ${i === 0 ? 'open' : ''}><summary>${i + 1}. ${esc(r.question)}
-      <small> · ${r.n_api_calls} model calls, ${r.n_mcp_tool_calls} tool calls, ${r.seconds} s, $${r.cost_usd.toFixed(3)}</small></summary>
+      <small> · ${r.n_api_calls} model calls, ${r.n_mcp_tool_calls} tool calls, ${r.seconds} s</small></summary>
       <ol class="steps">${steps}</ol><div class="answer">${ans}</div>
       <p class="note">Run ${esc(r.run_at)} UTC. Full JSON transcript: <code>results/agent_runs/${esc(r.label)}.json</code></p></details>`;
   }).join('');
